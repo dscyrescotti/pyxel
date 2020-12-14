@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
+import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/components/image_card.dart';
 import 'package:pyxel/view_models/photos_view_model.dart';
 
@@ -33,13 +34,7 @@ class _PhotosViewState extends State<PhotosView> {
         title: Text("pyxel"),
         centerTitle: true,
       ),
-      body: viewModel.photos.length == 0 ? Center( 
-        child: SizedBox(  
-          child: CircularProgressIndicator(),
-          height: 30,
-          width: 30,
-        ),
-      ) : RefreshIndicator(
+      body: viewModel.photos.length == 0 ? CircularProgress() : RefreshIndicator(
         child: StaggeredGridView.countBuilder(
           primary: false,
           crossAxisCount: 4, 
@@ -51,16 +46,7 @@ class _PhotosViewState extends State<PhotosView> {
           itemCount: viewModel.photos.length + 1,
           itemBuilder: (context, index) {
             if (index == viewModel.photos.length) {
-              return Center(
-                child: Padding(  
-                  padding: EdgeInsets.only(bottom: 10),
-                  child: SizedBox(  
-                    child: CircularProgressIndicator(),
-                    height: 30,
-                    width: 30,
-                  ),
-                )
-              );
+              return CircularProgress();
             } else {
               final photo = viewModel.photos[index];
               return ImageCard(key: Key(photo.id), photo: photo);
