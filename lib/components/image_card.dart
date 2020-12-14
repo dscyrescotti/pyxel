@@ -13,19 +13,24 @@ class ImageCard extends StatelessWidget {
       height: (photo.height / photo.width * MediaQuery.of(context).size.width * 0.5) - 25,
       child: ClipRRect(  
         borderRadius: BorderRadius.circular(10),
-        child: Image.network(  
-          photo.urls.small,
-          fit: BoxFit.fitWidth,
-          width: double.infinity,
-          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-            if (wasSynchronouslyLoaded) {
-              return child;
-            }
-            return AnimatedSwitcher( 
-              child: frame == null ? BlurHash(hash: photo.blurHash) : child,
-              duration: Duration(milliseconds: 350),
-            );
-          },
+        child: Stack(
+          children: [
+            BlurHash(hash: photo.blurHash),
+            Image.network(  
+              photo.urls.small,
+              fit: BoxFit.fitWidth,
+              width: double.infinity,
+              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                if (wasSynchronouslyLoaded) {
+                  return child;
+                }
+                return AnimatedSwitcher( 
+                  child: frame == null ? BlurHash(hash: photo.blurHash) : child,
+                  duration: Duration(milliseconds: 350),
+                );
+              },
+            ),
+          ],
         ),
       )
     );

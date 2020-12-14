@@ -3,7 +3,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/image_card.dart';
 import 'package:pyxel/view_models/photos_view_model.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class PhotosView extends StatefulWidget {
   PhotosView({Key key}) : super(key: key);
@@ -41,47 +40,33 @@ class _PhotosViewState extends State<PhotosView> {
           width: 30,
         ),
       ) : RefreshIndicator(
-        child: Scrollbar(  
-          child: AnimationLimiter(  
-            child: StaggeredGridView.countBuilder(
-              primary: false,
-              crossAxisCount: 4, 
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              padding: EdgeInsets.all(10),
-              physics: ScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              controller: _controller,
-              itemCount: viewModel.photos.length + 1,
-              itemBuilder: (context, index) {
-                if (index == viewModel.photos.length) {
-                  return Center(
-                    child: Padding(  
-                      padding: EdgeInsets.all(10),
-                      child: SizedBox(  
-                        child: CircularProgressIndicator(),
-                        height: 30,
-                        width: 30,
-                      ),
-                    )
-                  );
-                } else {
-                  final photo = viewModel.photos[index];
-                  return AnimationConfiguration.staggeredGrid(
-                    position: index, 
-                    columnCount: 2, 
-                    child: SlideAnimation( 
-                      duration: Duration(milliseconds: 350),
-                      verticalOffset: 50,
-                      child: FadeInAnimation(
-                        child: ImageCard(key: Key(photo.id), photo: photo,),
-                      ),
-                    )
-                  );
-                }
-              }, 
-              staggeredTileBuilder: (index) => index == viewModel.photos.length ? new StaggeredTile.fit(4) : new StaggeredTile.fit(2),
-            ),
-          )
+        child: StaggeredGridView.countBuilder(
+          primary: false,
+          crossAxisCount: 4, 
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          padding: EdgeInsets.all(10),
+          physics: ScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          controller: _controller,
+          itemCount: viewModel.photos.length + 1,
+          itemBuilder: (context, index) {
+            if (index == viewModel.photos.length) {
+              return Center(
+                child: Padding(  
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: SizedBox(  
+                    child: CircularProgressIndicator(),
+                    height: 30,
+                    width: 30,
+                  ),
+                )
+              );
+            } else {
+              final photo = viewModel.photos[index];
+              return ImageCard(key: Key(photo.id), photo: photo);
+            }
+          }, 
+          staggeredTileBuilder: (index) => index == viewModel.photos.length ? new StaggeredTile.fit(4) : new StaggeredTile.fit(2),
         ),
         onRefresh: _onRefresh,
       ),
