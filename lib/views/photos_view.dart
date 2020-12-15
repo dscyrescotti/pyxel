@@ -44,7 +44,7 @@ class _PhotosViewState extends State<PhotosView> {
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
           padding: EdgeInsets.all(10),
-          physics: ScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           controller: _controller,
           itemCount: viewModel.photos.length + 1,
           itemBuilder: (context, index) {

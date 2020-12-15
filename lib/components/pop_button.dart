@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 class PopButton extends StatelessWidget {
   const PopButton({
     Key key,
-    this.color
+    this.color,
+    this.icon = Icons.arrow_back
   }) : super(key: key);
 
   final Color color;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +22,27 @@ class PopButton extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         shape: CircleBorder(),
         child: Container(  
+          padding: EdgeInsets.all(5),
           decoration: BoxDecoration(  
             color: color.withOpacity(0.5),
             shape: BoxShape.circle
           ),
-          child: Icon(
-            Icons.chevron_left,
-            size: 35,
-            color: _color,
+          child: Hero(  
+            tag: "hero.back.button",
+            flightShuttleBuilder: (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
+              return FadeTransition(  
+                opacity: animation, 
+                child: RotationTransition(  
+                  turns: animation,
+                  child: toHeroContext.widget,
+                ),
+              );
+            },
+            child: Icon(
+              icon,
+              size: 25,
+              color: _color,
+            ),
           ),
         ),
         onPressed: Navigator.of(context).pop,

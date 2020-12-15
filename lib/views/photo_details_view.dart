@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/view_models/photo_details_view_model.dart';
-import 'package:pyxel/views/photo_viewer_view.dart';
-import '../components/pop_button.dart';
+import 'package:pyxel/components/sliver_header.dart';
 
 class PhotoDetailsView extends StatelessWidget {
   const PhotoDetailsView({Key key, this.id}) : super(key: key);
@@ -48,44 +46,45 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
             return CustomScrollView(  
               physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               slivers: [
-                SliverAppBar(
-                  backgroundColor: color,
-                  leading: PopButton(color: color),
-                  pinned: true,
-                  expandedHeight: 300,
-                  stretch: true,
-                  elevation: 0,
-                  flexibleSpace: FlexibleSpaceBar(  
-                    stretchModes: [
-                      StretchMode.zoomBackground,
-                    ],
-                    background: InkWell(  
-                      onTap: () {
-                        Navigator.of(context).push( 
-                          MaterialPageRoute(builder: (context) => PhotoViewerView(src: photo.urls.full, tag: photo.id, color: photo.color))
-                        );
-                      },
-                      child: Hero(  
-                        tag: photo.id,
-                        child: Image.network(  
-                          photo.urls.full,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          loadingBuilder: (context, child, event) {
-                            if (event == null) {
-                              return child;
-                            }
-                            return BlurHash(hash: photo.blurHash);
-                          },
-                        ),
-                      ),
-                    )
-                  ),
-                ),
+                SliverHeader(color: color, photo: photo),
                 SliverList(
                   delegate: SliverChildListDelegate([
-                    Container(height: 500),
-                    Text(photo.id)
+                    Container(  
+                    width: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.all(10),
+                    color: Colors.red,
+                    child: Row( 
+                       children: [
+                        Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration( 
+                            shape: BoxShape.circle,
+                            color: color,
+                          ),
+                          child: ClipOval(
+                            child: viewModel.user != null ? Image.network(
+                              viewModel.user.profileImage.large
+                            ) : null,
+                          ),
+                          margin: EdgeInsets.only(right: 10),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              photo.user.name,
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                            Text(
+                              '@${photo.user.username}',
+                              style: Theme.of(context).textTheme.subtitle2,
+                            )
+                          ],
+                         )
+                       ],
+                     ), 
+                    )
                   ]),
                 ),
               ],
@@ -96,3 +95,4 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
     );
   }
 }
+

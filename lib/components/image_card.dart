@@ -27,17 +27,7 @@ class ImageCard extends StatelessWidget {
           height: (photo.height / photo.width * (MediaQuery.of(context).size.width - 30) * 0.5),
           width: double.infinity,
           color: HexColor(photo.color),
-          child: 
-          // CachedNetworkImage( 
-          //   fit: BoxFit.fitWidth,
-          //   width: double.infinity,
-          //   imageUrl: photo.urls.small,
-          //   placeholder: (context, url) => BlurHash(hash: photo.blurHash),
-          //   placeholderFadeInDuration: Duration(milliseconds: 0),
-          //   fadeOutDuration: Duration(milliseconds: 0),
-          // )
-          
-          Image.network(  
+          child: Image.network(  
             photo.urls.small,
             fit: BoxFit.fitWidth,
             width: double.infinity,

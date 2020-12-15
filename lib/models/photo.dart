@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../utils/date_time_parser.dart';
+import 'user.dart';
 
 part 'photo.g.dart';
 
@@ -23,8 +24,9 @@ class Photo {
   final Urls urls;
   final Exif exif;
   final Location location;
+  final User user;
 
-  Photo({this.id, this.createdAt, this.updatedAt, this.width, this.height, this.color, this.blurHash, this.likes, this.liked, this.description, this.urls, this.downloads, this.exif, this.location});
+  Photo({this.id, this.createdAt, this.updatedAt, this.width, this.height, this.color, this.blurHash, this.likes, this.liked, this.description, this.urls, this.downloads, this.exif, this.location, this.user});
 
   factory Photo.fromJson(Map<String, dynamic> json) => _$PhotoFromJson(json);
   Map<String, dynamic> toJson() => _$PhotoToJson(this);
