@@ -3,6 +3,7 @@ import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:pyxel/models/photo.dart';
 import 'package:pyxel/views/photo_details_view.dart';
+import 'route_transition.dart';
 
 class ImageCard extends StatelessWidget {
   const ImageCard({Key key, this.photo}) : super(key: key);
@@ -18,7 +19,7 @@ class ImageCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => PhotoDetailsView(id: photo.id)));
+        Navigator.push(context, SlideRoute(page: PhotoDetailsView(id: photo.id,)));
       },
       padding: EdgeInsets.all(0),
       child: ClipRRect(  

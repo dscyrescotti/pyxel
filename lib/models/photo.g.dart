@@ -31,6 +31,9 @@ Photo _$PhotoFromJson(Map<String, dynamic> json) {
     user: json['user'] == null
         ? null
         : User.fromJson(json['user'] as Map<String, dynamic>),
+    tags: (json['tags'] as List)
+        ?.map((e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
   );
 }
 
@@ -50,6 +53,7 @@ Map<String, dynamic> _$PhotoToJson(Photo instance) => <String, dynamic>{
       'exif': instance.exif,
       'location': instance.location,
       'user': instance.user,
+      'tags': instance.tags,
     };
 
 Urls _$UrlsFromJson(Map<String, dynamic> json) {
@@ -116,4 +120,14 @@ Position _$PositionFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$PositionToJson(Position instance) => <String, dynamic>{
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+    };
+
+Tag _$TagFromJson(Map<String, dynamic> json) {
+  return Tag(
+    title: json['title'] as String,
+  );
+}
+
+Map<String, dynamic> _$TagToJson(Tag instance) => <String, dynamic>{
+      'title': instance.title,
     };

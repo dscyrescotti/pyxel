@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/components/pop_button.dart';
 
 class PhotoViewerView extends StatelessWidget {
@@ -18,18 +19,22 @@ class PhotoViewerView extends StatelessWidget {
         elevation: 0,
         leading: PopButton(color: HexColor(color), icon: Icons.close,),
       ),
-      body: PhotoView(   
-        imageProvider: NetworkImage(  
-          src
-        ),
-        minScale: PhotoViewComputedScale.contained,
-        maxScale: 0.8,
-        backgroundDecoration: BoxDecoration( 
-          color: HexColor(color)
-        ),
-        heroAttributes: PhotoViewHeroAttributes(
-          tag: tag, 
-          transitionOnUserGestures: true,
+      body: Container(  
+        color: HexColor(color), 
+        child: PhotoView(   
+          loadingBuilder: (context, event) => CircularProgress(color: HexColor(color),),
+          imageProvider: NetworkImage(  
+            src
+          ),
+          minScale: PhotoViewComputedScale.contained,
+          maxScale: 0.8,
+          backgroundDecoration: BoxDecoration( 
+            color: Colors.transparent
+          ),
+          heroAttributes: PhotoViewHeroAttributes(
+            tag: tag, 
+            transitionOnUserGestures: true,
+          ),
         ),
       ),
       extendBodyBehindAppBar: true,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pyxel/views/photo_viewer_view.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
+import 'route_transition.dart';
 
 class HeroImageButton extends StatelessWidget {
   const HeroImageButton({
@@ -19,9 +20,7 @@ class HeroImageButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(  
       onTap: () {
-        Navigator.of(context).push( 
-          MaterialPageRoute(builder: (context) => PhotoViewerView(src: src, tag: tag, color: color))
-        );
+        Navigator.push(context, FadeRoute(page: PhotoViewerView(src: src, tag: tag, color: color,)));
       },
       child: Hero(  
         tag: tag,

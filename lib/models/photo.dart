@@ -25,8 +25,9 @@ class Photo {
   final Exif exif;
   final Location location;
   final User user;
+  final List<Tag> tags;
 
-  Photo({this.id, this.createdAt, this.updatedAt, this.width, this.height, this.color, this.blurHash, this.likes, this.liked, this.description, this.urls, this.downloads, this.exif, this.location, this.user});
+  Photo({this.id, this.createdAt, this.updatedAt, this.width, this.height, this.color, this.blurHash, this.likes, this.liked, this.description, this.urls, this.downloads, this.exif, this.location, this.user, this.tags});
 
   factory Photo.fromJson(Map<String, dynamic> json) => _$PhotoFromJson(json);
   Map<String, dynamic> toJson() => _$PhotoToJson(this);
@@ -82,4 +83,13 @@ class Position {
   Position({this.latitude, this.longitude});
   factory Position.fromJson(Map<String, dynamic> json) => _$PositionFromJson(json);
   Map<String, dynamic> toJson() => _$PositionToJson(this);
+}
+
+@JsonSerializable()
+class Tag {
+  final String title;
+
+  Tag({this.title});
+  factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
+  Map<String, dynamic> toJson() => _$TagToJson(this);
 }
