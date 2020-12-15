@@ -24,10 +24,20 @@ class ImageCard extends StatelessWidget {
       child: ClipRRect(  
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          height: (photo.height / photo.width * MediaQuery.of(context).size.width * 0.5) - 25,
+          height: (photo.height / photo.width * (MediaQuery.of(context).size.width - 30) * 0.5),
           width: double.infinity,
           color: HexColor(photo.color),
-          child: Image.network(  
+          child: 
+          // CachedNetworkImage( 
+          //   fit: BoxFit.fitWidth,
+          //   width: double.infinity,
+          //   imageUrl: photo.urls.small,
+          //   placeholder: (context, url) => BlurHash(hash: photo.blurHash),
+          //   placeholderFadeInDuration: Duration(milliseconds: 0),
+          //   fadeOutDuration: Duration(milliseconds: 0),
+          // )
+          
+          Image.network(  
             photo.urls.small,
             fit: BoxFit.fitWidth,
             width: double.infinity,

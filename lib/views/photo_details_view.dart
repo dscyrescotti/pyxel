@@ -4,6 +4,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/view_models/photo_details_view_model.dart';
+import 'package:pyxel/views/photo_viewer_view.dart';
 import '../components/pop_button.dart';
 
 class PhotoDetailsView extends StatelessWidget {
@@ -58,17 +59,27 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
                     stretchModes: [
                       StretchMode.zoomBackground,
                     ],
-                    background: Image.network(  
-                      photo.urls.full,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      loadingBuilder: (context, child, event) {
-                        if (event == null) {
-                          return child;
-                        }
-                        return BlurHash(hash: photo.blurHash);
+                    background: InkWell(  
+                      onTap: () {
+                        Navigator.of(context).push( 
+                          MaterialPageRoute(builder: (context) => PhotoViewerView(src: photo.urls.full, tag: photo.id, color: photo.color))
+                        );
                       },
-                    ),
+                      child: Hero(  
+                        tag: photo.id,
+                        child: Image.network(  
+                          photo.urls.full,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          loadingBuilder: (context, child, event) {
+                            if (event == null) {
+                              return child;
+                            }
+                            return BlurHash(hash: photo.blurHash);
+                          },
+                        ),
+                      ),
+                    )
                   ),
                 ),
                 SliverList(

@@ -21,6 +21,7 @@ class _PhotosViewState extends State<PhotosView> {
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
   }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -36,6 +37,8 @@ class _PhotosViewState extends State<PhotosView> {
       ),
       body: viewModel.photos.length == 0 ? CircularProgress() : RefreshIndicator(
         child: StaggeredGridView.countBuilder(
+          addAutomaticKeepAlives: false,
+          addRepaintBoundaries: false,
           primary: false,
           crossAxisCount: 4, 
           mainAxisSpacing: 10,
