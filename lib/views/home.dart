@@ -13,7 +13,6 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
-    print('[Home]: ${MediaQuery.of(context).size.width}');
     return ChangeNotifierProvider( 
       create: (context) => PhotosViewModel(),
       child: PhotosView(),
