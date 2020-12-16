@@ -34,6 +34,7 @@ dependencies:
   flutter_tags: ^0.4.9+1
   waterfall_flow: ^2.0.5
   cupertino_icons: ^1.0.0
+  numeral: ^1.0.4
 
 dev_dependencies:
   flutter_test:

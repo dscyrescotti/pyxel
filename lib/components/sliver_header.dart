@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pyxel/utils/darken.dart';
 import '../models/photo.dart';
 import 'pop_button.dart';
 import 'hero_image_button.dart';
@@ -16,7 +17,7 @@ class SliverHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      backgroundColor: color,
+      backgroundColor: darken(color),
       leading: PopButton(color: color),
       pinned: true,
       expandedHeight: 350,
