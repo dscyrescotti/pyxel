@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/components/image_card.dart';
 import 'package:pyxel/view_models/photos_view_model.dart';
+import 'package:waterfall_flow/waterfall_flow.dart';
 
 class PhotosView extends StatefulWidget {
   PhotosView({Key key}) : super(key: key);
@@ -30,32 +30,25 @@ class _PhotosViewState extends State<PhotosView> {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<PhotosViewModel>(context);
+    print("[Build]: build widget.");
     return Scaffold(
       appBar: AppBar(  
         title: Text("pyxel"),
         centerTitle: true,
       ),
       body: viewModel.photos.length == 0 ? CircularProgress() : RefreshIndicator(
-        child: StaggeredGridView.countBuilder(
-          addAutomaticKeepAlives: false,
-          addRepaintBoundaries: false,
-          primary: false,
-          crossAxisCount: 4, 
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          padding: EdgeInsets.all(10),
-          physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        child: WaterfallFlow.builder(
+          physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           controller: _controller,
-          itemCount: viewModel.photos.length + 1,
-          itemBuilder: (context, index) {
-            if (index == viewModel.photos.length) {
-              return CircularProgress();
-            } else {
-              final photo = viewModel.photos[index];
-              return ImageCard(key: Key(photo.id), photo: photo);
-            }
-          }, 
-          staggeredTileBuilder: (index) => index == viewModel.photos.length ? new StaggeredTile.fit(4) : new StaggeredTile.fit(2),
+          padding: EdgeInsets.all(10),
+          gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: viewModel.photos.length,
+          itemBuilder: (context, index) => ImageCard(photo: viewModel.photos[index]),
+          cacheExtent: 1000,
         ),
         onRefresh: _onRefresh,
       ),

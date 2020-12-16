@@ -34,6 +34,7 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
     super.initState();
     Provider.of<PhotoDetailsViewModel>(context, listen: false).fetchPhoto();
   }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<PhotoDetailsViewModel>(context);
