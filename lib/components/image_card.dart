@@ -43,7 +43,7 @@ class ImageCard extends StatelessWidget {
             },
           ),
         ),
-      )
+      ),
     );
   }
 }

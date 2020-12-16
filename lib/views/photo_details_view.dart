@@ -179,7 +179,7 @@ class ExifRow extends StatelessWidget {
           Row(  
             children: [
               ExifBox(value: photo.exif.focalLength ?? '-', title: 'Focal Length',),
-              ExifBox(value: photo.exif.iso.toString() ?? '-', title: 'ISO',)
+              ExifBox(value: (photo.exif.iso ?? '-').toString(), title: 'ISO',)
             ],
           ),
           Row(  
@@ -333,7 +333,7 @@ class StatisticBox extends StatelessWidget {
               title,
               style: TextStyle(  
                 fontSize: Theme.of(context).textTheme.bodyText2.fontSize,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
