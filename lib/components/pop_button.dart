@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import '../utils/darken.dart';
 
 class PopButton extends StatelessWidget {
   const PopButton({
@@ -25,7 +24,7 @@ class PopButton extends StatelessWidget {
         child: Container(  
           padding: EdgeInsets.all(5),
           decoration: BoxDecoration(  
-            color: darken(color).withOpacity(0.4),
+            color: color.withOpacity(0.4),
             shape: BoxShape.circle
           ),
           child: Hero(  

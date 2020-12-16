@@ -6,7 +6,6 @@ import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/models/photo.dart';
 import 'package:pyxel/view_models/photo_details_view_model.dart';
 import 'package:pyxel/components/sliver_header.dart';
-import '../utils/darken.dart';
 import '../utils/numeral.dart';
 
 class PhotoDetailsView extends StatelessWidget {
@@ -58,7 +57,7 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
                     photo.description != null ? DescriptionRow(photo: photo) : Container(),
                     StatisticRow(photo: photo, color: color),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                       child: Column( 
                         crossAxisAlignment: CrossAxisAlignment.start, 
                         children: [
@@ -74,26 +73,68 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
                           ),
                           Row(  
                             children: [
-                              StatisticBox(value: photo.exif.aperture ?? '-', color: color, title: 'Aperture',),
-                              StatisticBox(value: photo.exif.exposureTime ?? '-', color: color, title: 'Exposure Time',)
+                              ExifBox(value: photo.exif.aperture ?? '-', title: 'Aperture',),
+                              ExifBox(value: photo.exif.exposureTime ?? '-', title: 'Exposure Time',)
                             ],
                           ),
                           Row(  
                             children: [
-                              StatisticBox(value: photo.exif.focalLength ?? '-', color: color, title: 'Focal Length',),
-                              StatisticBox(value: photo.exif.iso.toString() ?? '-', color: color, title: 'ISO',)
+                              ExifBox(value: photo.exif.focalLength ?? '-', title: 'Focal Length',),
+                              ExifBox(value: photo.exif.iso.toString() ?? '-', title: 'ISO',)
+                            ],
+                          ),
+                          Row(  
+                            children: [
+                              ExifBox(value: photo.exif.make ?? '-', title: 'Make',),
+                              ExifBox(value: photo.exif.model ?? '-', title: 'Model',)
                             ],
                           ),
                         ],
                       ),
                     ),
-                    TagsRow(tags: photo.tags, color: color),
+                    TagsRow(tags: photo.tags,),
                   ]),
                 ),
               ],
             );
           }
         },
+      ),
+    );
+  }
+}
+
+class ExifBox extends StatelessWidget {
+  ExifBox({Key key, this.title, this.value}) : super(key: key);
+
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.all(5),
+        child: Column(  
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              value,
+              style: TextStyle(  
+                fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              title,
+              style: TextStyle(  
+                fontSize: Theme.of(context).textTheme.caption.fontSize,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -112,12 +153,12 @@ class StatisticRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5),
+      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Row(  
         children: [
-          StatisticBox(title: 'Views', value: Numeral(photo.views).value(), color: color,),
-          StatisticBox(title: 'Likes', value: Numeral(photo.likes).value(), color: color,),
-          StatisticBox(title: 'Downloads', value: Numeral(photo.downloads).value(), color: color,),
+          StatisticBox(title: 'Views', value: Numeral(photo.views).value(),),
+          StatisticBox(title: 'Likes', value: Numeral(photo.likes).value(),),
+          StatisticBox(title: 'Downloads', value: Numeral(photo.downloads).value(),),
         ],
       ),
     );
@@ -128,16 +169,14 @@ class TagsRow extends StatelessWidget {
   const TagsRow({
     Key key,
     this.tags,
-    this.color,
   }) : super(key: key);
   final List<Tag> tags;
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final _color = color.computeLuminance() < 0.5 ? Colors.white : Colors.black;
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: tags.length == 0 ? EdgeInsets.zero : EdgeInsets.only(bottom: 10),
       child: Tags(  
         spacing: 8,
         runSpacing: 8,
@@ -151,10 +190,10 @@ class TagsRow extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           index: index, 
           title: tags[index].title,
-          border: Border(bottom: BorderSide.none, top: BorderSide.none),
+          border: Border.all(width: 0.5, color: Colors.grey.withOpacity(0.3)),
           elevation: 0,
-          textActiveColor: _color,
-          activeColor: darken(color).withOpacity(0.6),
+          textActiveColor: Colors.black,
+          activeColor: Colors.grey.withOpacity(0.2),
         ),
       ),
     );
@@ -162,22 +201,20 @@ class TagsRow extends StatelessWidget {
 }
 
 class StatisticBox extends StatelessWidget {
-  const StatisticBox({Key key, this.title, this.value, this.color}) : super(key: key);
+  const StatisticBox({Key key, this.title, this.value}) : super(key: key);
 
   final String value;
   final String title;
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final _color = color.computeLuminance() < 0.5 ? Colors.white : Colors.black;
     return Expanded(
       child: Container(
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(5),
         decoration: BoxDecoration(  
           borderRadius: BorderRadius.circular(10),
-          color: darken(color).withOpacity(0.6)
+          border: Border.all(width: 0.5, color: Colors.black.withOpacity(0.5))
         ),
         child: Column(  
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,7 +224,6 @@ class StatisticBox extends StatelessWidget {
               style: TextStyle(  
                 fontSize: Theme.of(context).textTheme.headline6.fontSize,
                 fontWeight: FontWeight.bold,
-                color: _color
               ),
             ),
             Text(
@@ -195,7 +231,6 @@ class StatisticBox extends StatelessWidget {
               style: TextStyle(  
                 fontSize: Theme.of(context).textTheme.bodyText2.fontSize,
                 fontWeight: FontWeight.bold,
-                color: _color
               ),
             ),
           ],
@@ -259,7 +294,7 @@ class ProfileRow extends StatelessWidget {
             width: 60,
             decoration: BoxDecoration( 
               shape: BoxShape.circle,
-              color: darken(color).withOpacity(0.8),
+              color: color,
             ),
             child: ClipOval(
               child: Image.network(
