@@ -26,8 +26,9 @@ class Photo {
   final Location location;
   final User user;
   final List<Tag> tags;
+  final int views;
 
-  Photo({this.id, this.createdAt, this.updatedAt, this.width, this.height, this.color, this.blurHash, this.likes, this.liked, this.description, this.urls, this.downloads, this.exif, this.location, this.user, this.tags});
+  Photo({this.id, this.createdAt, this.updatedAt, this.width, this.height, this.color, this.blurHash, this.likes, this.liked, this.description, this.urls, this.downloads, this.exif, this.location, this.user, this.tags, this.views});
 
   factory Photo.fromJson(Map<String, dynamic> json) => _$PhotoFromJson(json);
   Map<String, dynamic> toJson() => _$PhotoToJson(this);

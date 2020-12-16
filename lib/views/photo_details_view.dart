@@ -6,8 +6,8 @@ import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/models/photo.dart';
 import 'package:pyxel/view_models/photo_details_view_model.dart';
 import 'package:pyxel/components/sliver_header.dart';
-import 'package:numeral/numeral.dart';
 import '../utils/darken.dart';
+import '../utils/numeral.dart';
 
 class PhotoDetailsView extends StatelessWidget {
   const PhotoDetailsView({Key key, this.id}) : super(key: key);
@@ -54,24 +54,71 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
                 SliverHeader(color: color, photo: photo),
                 SliverList(
                   delegate: SliverChildListDelegate([
-                    ProfileRow(color: color, viewModel: viewModel, photo: photo),
+                    ProfileRow(color: color, photo: photo),
                     photo.description != null ? DescriptionRow(photo: photo) : Container(),
-                    TagsRow(tags: photo.tags, color: color,),
+                    StatisticRow(photo: photo, color: color),
                     Container(
-                      padding: EdgeInsets.all(5),
-                      child: Row(  
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Column( 
+                        crossAxisAlignment: CrossAxisAlignment.start, 
                         children: [
-                          StatisticBox(title: 'Likes', icon: Icons.star, value: Numeral(photo.likes).value(), color: color,),
-                          StatisticBox(title: 'Downloads', icon: Icons.download_rounded, value: Numeral(photo.downloads).value(), color: color,),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Text(
+                              'Exif',
+                              style: TextStyle(  
+                                fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+                          Row(  
+                            children: [
+                              StatisticBox(value: photo.exif.aperture ?? '-', color: color, title: 'Aperture',),
+                              StatisticBox(value: photo.exif.exposureTime ?? '-', color: color, title: 'Exposure Time',)
+                            ],
+                          ),
+                          Row(  
+                            children: [
+                              StatisticBox(value: photo.exif.focalLength ?? '-', color: color, title: 'Focal Length',),
+                              StatisticBox(value: photo.exif.iso.toString() ?? '-', color: color, title: 'ISO',)
+                            ],
+                          ),
                         ],
                       ),
-                    )
+                    ),
+                    TagsRow(tags: photo.tags, color: color),
                   ]),
                 ),
               ],
             );
           }
         },
+      ),
+    );
+  }
+}
+
+class StatisticRow extends StatelessWidget {
+  const StatisticRow({
+    Key key,
+    @required this.photo,
+    @required this.color,
+  }) : super(key: key);
+
+  final Photo photo;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      child: Row(  
+        children: [
+          StatisticBox(title: 'Views', value: Numeral(photo.views).value(), color: color,),
+          StatisticBox(title: 'Likes', value: Numeral(photo.likes).value(), color: color,),
+          StatisticBox(title: 'Downloads', value: Numeral(photo.downloads).value(), color: color,),
+        ],
       ),
     );
   }
@@ -90,7 +137,7 @@ class TagsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final _color = color.computeLuminance() < 0.5 ? Colors.white : Colors.black;
     return Container(
-      padding: tags.length == 0 ? EdgeInsets.zero : EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Tags(  
         spacing: 8,
         runSpacing: 8,
@@ -98,15 +145,16 @@ class TagsRow extends StatelessWidget {
         itemCount: tags.length,
         itemBuilder: (index) => ItemTags(
           textStyle: TextStyle(  
-            fontSize: Theme.of(context).textTheme.overline.fontSize,
+            fontSize: Theme.of(context).textTheme.caption.fontSize,
             fontWeight: FontWeight.normal
           ),
-          padding: EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           index: index, 
           title: tags[index].title,
+          border: Border(bottom: BorderSide.none, top: BorderSide.none),
           elevation: 0,
           textActiveColor: _color,
-          activeColor: darken(color).withOpacity(0.7),
+          activeColor: darken(color).withOpacity(0.6),
         ),
       ),
     );
@@ -114,11 +162,10 @@ class TagsRow extends StatelessWidget {
 }
 
 class StatisticBox extends StatelessWidget {
-  const StatisticBox({Key key, this.title, this.value, this.icon, this.color}) : super(key: key);
+  const StatisticBox({Key key, this.title, this.value, this.color}) : super(key: key);
 
   final String value;
   final String title;
-  final IconData icon;
   final Color color;
 
   @override
@@ -126,11 +173,11 @@ class StatisticBox extends StatelessWidget {
     final _color = color.computeLuminance() < 0.5 ? Colors.white : Colors.black;
     return Expanded(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 5),
-        padding: EdgeInsets.all(7),
+        margin: EdgeInsets.all(5),
+        padding: EdgeInsets.all(5),
         decoration: BoxDecoration(  
           borderRadius: BorderRadius.circular(10),
-          color: darken(color).withOpacity(0.7)
+          color: darken(color).withOpacity(0.6)
         ),
         child: Column(  
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -143,24 +190,14 @@ class StatisticBox extends StatelessWidget {
                 color: _color
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(  
-                  icon,
-                  size: 23,
-                  color: _color,
-                ),
-                Text(
-                  title,
-                  style: TextStyle(  
-                    fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-                    fontWeight: FontWeight.w600,
-                    color: _color
-                  ),
-                ),
-              ],
-            )
+            Text(
+              title,
+              style: TextStyle(  
+                fontSize: Theme.of(context).textTheme.bodyText2.fontSize,
+                fontWeight: FontWeight.bold,
+                color: _color
+              ),
+            ),
           ],
         ),
       ),
@@ -204,12 +241,10 @@ class ProfileRow extends StatelessWidget {
   const ProfileRow({
     Key key,
     @required this.color,
-    @required this.viewModel,
     @required this.photo,
   }) : super(key: key);
 
   final Color color;
-  final PhotoDetailsViewModel viewModel;
   final Photo photo;
 
   @override
@@ -227,9 +262,9 @@ class ProfileRow extends StatelessWidget {
               color: darken(color).withOpacity(0.8),
             ),
             child: ClipOval(
-              child: viewModel.user != null ? Image.network(
-                viewModel.user.profileImage.large
-              ) : null,
+              child: Image.network(
+                photo.user.profileImage.large
+              ),
             ),
             margin: EdgeInsets.only(right: 10),
           ),

@@ -34,6 +34,7 @@ Photo _$PhotoFromJson(Map<String, dynamic> json) {
     tags: (json['tags'] as List)
         ?.map((e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
         ?.toList(),
+    views: json['views'] as int,
   );
 }
 
@@ -54,6 +55,7 @@ Map<String, dynamic> _$PhotoToJson(Photo instance) => <String, dynamic>{
       'location': instance.location,
       'user': instance.user,
       'tags': instance.tags,
+      'views': instance.views,
     };
 
 Urls _$UrlsFromJson(Map<String, dynamic> json) {

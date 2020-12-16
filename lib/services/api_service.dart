@@ -6,6 +6,7 @@ class APIService {
   static Future<void> fetch(String endpoint, {Map<String, String> params, Map<String, String> headers, void Function(String) callback}) async {
     final uri = Uri.https(BASE_URL, endpoint, params ?? {});
     final response = await get(uri, headers: headers ?? {});
+    print('[URL]: ${uri.toString()}');
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw "[Error]: API response ends with status code ${response.statusCode}.";
     }
