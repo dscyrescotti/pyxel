@@ -67,6 +67,14 @@ class _PhotosViewState extends State<PhotosView> {
                 ),
               ),
             ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Padding(
+                  padding: EdgeInsets.only(top: 5, bottom: 10),
+                  child: CircularProgress(),
+                )
+              ]),
+            )
           ],
         ),
       )
