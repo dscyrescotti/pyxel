@@ -4,9 +4,11 @@ import 'package:flutter_tags/flutter_tags.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
+import 'package:pyxel/components/route_transition.dart';
 import 'package:pyxel/models/photo.dart';
 import 'package:pyxel/view_models/photo_details_view_model.dart';
 import 'package:pyxel/components/sliver_header.dart';
+import 'package:pyxel/views/user_profile_view.dart';
 import '../utils/numeral.dart';
 import 'package:latlong/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -400,8 +402,16 @@ class ProfileRow extends StatelessWidget {
               color: color,
             ),
             child: ClipOval(
-              child: Image.network(
-                photo.user.profileImage.large
+              child: InkWell(
+                customBorder: RoundedRectangleBorder(  
+                  borderRadius: BorderRadius.circular(30)
+                ),
+                onTap: () {
+                  Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
+                },
+                child: Image.network(
+                  photo.user.profileImage.large
+                ),
               ),
             ),
             margin: EdgeInsets.only(right: 10),
@@ -409,20 +419,30 @@ class ProfileRow extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                photo.user.name,
-                style: TextStyle(  
-                  fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
-                  fontWeight: FontWeight.bold
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
+                },
+                child: Text(
+                  photo.user.name,
+                  style: TextStyle(  
+                    fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
               ),
-              Text(
-                '@${photo.user.username}',
-                style: TextStyle(  
-                  fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-                  fontWeight: FontWeight.normal
+              InkWell( 
+                onTap: () {
+                  Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
+                }, 
+                child: Text(
+                  '@${photo.user.username}',
+                  style: TextStyle(  
+                    fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                    fontWeight: FontWeight.normal
+                  ),
                 ),
-              )
+              ),
             ],
           )
         ],

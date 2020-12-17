@@ -46,6 +46,13 @@ class _PhotosViewState extends State<PhotosView> {
               title: Text('pyxel'),
               centerTitle: true,
               textTheme: Theme.of(context).textTheme,
+              bottom: PreferredSize(  
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  height: 0.4,
+                ),
+                preferredSize: Size.fromHeight(0.4),
+              ),
             ),
             CupertinoSliverRefreshControl(
               onRefresh: _onRefresh,
