@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
@@ -32,26 +33,58 @@ class _PhotosViewState extends State<PhotosView> {
     final viewModel = Provider.of<PhotosViewModel>(context);
     print("[Build]: build widget.");
     return Scaffold(
-      appBar: AppBar(  
-        title: Text("pyxel"),
-        centerTitle: true,
-      ),
-      body: viewModel.photos.length == 0 ? CircularProgress() : RefreshIndicator(
-        child: WaterfallFlow.builder(
-          physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+      body: viewModel.photos.length == 0 ? CircularProgress() : SafeArea(
+        child: CustomScrollView(  
           controller: _controller,
-          padding: EdgeInsets.all(10),
-          gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemCount: viewModel.photos.length,
-          itemBuilder: (context, index) => ImageCard(photo: viewModel.photos[index]),
-          cacheExtent: 1000,
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              floating: true,
+              elevation: 0,
+              snap: true,
+              backgroundColor: Colors.white,
+              title: Text('pyxel'),
+              centerTitle: true,
+              textTheme: Theme.of(context).textTheme,
+              bottom: PreferredSize(  
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  height: 0.4,
+                ),
+                preferredSize: Size.fromHeight(0.4),
+              ),
+            ),
+            CupertinoSliverRefreshControl(
+              onRefresh: _onRefresh,
+              // builder: (context, refreshState, pulledExtent, refreshTriggerPullDistance, refreshIndicatorExtent) => Icon(Icons.arrow_downward),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.all(10),
+              sliver: SliverWaterfallFlow(
+                gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return ImageCard(photo: viewModel.photos[index]);
+                  },
+                  childCount: viewModel.photos.length
+                ),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Padding(
+                  padding: EdgeInsets.only(top: 5, bottom: 10),
+                  child: CircularProgress(),
+                )
+              ]),
+            )
+          ],
         ),
-        onRefresh: _onRefresh,
-      ),
+      )
     );
   }
   _scrollListener() {
@@ -64,3 +97,4 @@ class _PhotosViewState extends State<PhotosView> {
     await Provider.of<PhotosViewModel>(context, listen: false).fetchPhotos(isRefresh: true);
   }
 }
+

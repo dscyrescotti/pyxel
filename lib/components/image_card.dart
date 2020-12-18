@@ -37,13 +37,13 @@ class ImageCard extends StatelessWidget {
                 return child;
               }
               return AnimatedSwitcher( 
-                child: frame == null ? BlurHash(hash: photo.blurHash) : child,
+                child: frame == null ? BlurHash(hash: photo.blurHash ?? "", color: HexColor(photo.color),) : child,
                 duration: Duration(milliseconds: 200),
               );
             },
           ),
         ),
-      )
+      ),
     );
   }
 }

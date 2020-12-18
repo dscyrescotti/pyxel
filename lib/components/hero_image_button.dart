@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:pyxel/views/photo_viewer_view.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'route_transition.dart';
@@ -32,7 +33,7 @@ class HeroImageButton extends StatelessWidget {
             if (event == null) {
               return child;
             }
-            return BlurHash(hash: blurHash);
+            return BlurHash(hash: blurHash ?? "", color: HexColor(color),);
           },
         ),
       ),

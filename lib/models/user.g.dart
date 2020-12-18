@@ -21,6 +21,8 @@ User _$UserFromJson(Map<String, dynamic> json) {
     profileImage: json['profile_image'] == null
         ? null
         : Profile.fromJson(json['profile_image'] as Map<String, dynamic>),
+    followersCount: json['followers_count'] as int,
+    followingCount: json['following_count'] as int,
   );
 }
 
@@ -36,6 +38,8 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'total_photos': instance.totalPhotos,
       'total_collections': instance.totalCollections,
       'profile_image': instance.profileImage,
+      'followers_count': instance.followersCount,
+      'following_count': instance.followingCount,
     };
 
 Profile _$ProfileFromJson(Map<String, dynamic> json) {

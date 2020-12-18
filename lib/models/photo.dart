@@ -74,6 +74,18 @@ class Location {
   Location({this.city, this.country, this.position});
   factory Location.fromJson(Map<String, dynamic> json) => _$LocationFromJson(json);
   Map<String, dynamic> toJson() => _$LocationToJson(this);
+
+  String name() {
+    if (city != null && country != null) {
+      return '$city, $country';
+    } else if (city != null && country == null) {
+      return city;
+    } else if (city == null && country != null) {
+      return country;
+    } else {
+      return 'Unknown Place';
+    }
+  }
 }
 
 @JsonSerializable()
@@ -84,6 +96,8 @@ class Position {
   Position({this.latitude, this.longitude});
   factory Position.fromJson(Map<String, dynamic> json) => _$PositionFromJson(json);
   Map<String, dynamic> toJson() => _$PositionToJson(this);
+
+  bool isNotNull() => latitude != null && longitude != null;
 }
 
 @JsonSerializable()

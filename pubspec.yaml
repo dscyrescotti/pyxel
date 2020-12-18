@@ -34,6 +34,8 @@ dependencies:
   flutter_tags: ^0.4.9+1
   waterfall_flow: ^2.0.5
   cupertino_icons: ^1.0.0
+  flutter_map: ^0.10.1+1
+  linked_scroll_controller: ^0.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
+import 'package:pyxel/components/route_transition.dart';
 import 'package:pyxel/models/photo.dart';
 import 'package:pyxel/view_models/photo_details_view_model.dart';
 import 'package:pyxel/components/sliver_header.dart';
+import 'package:pyxel/views/user_profile_view.dart';
 import '../utils/numeral.dart';
+import 'package:latlong/latlong.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../components/statistic_box.dart';
 
 class PhotoDetailsView extends StatelessWidget {
   const PhotoDetailsView({Key key, this.id}) : super(key: key);
@@ -56,42 +62,8 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
                     ProfileRow(color: color, photo: photo),
                     photo.description != null ? DescriptionRow(photo: photo) : Container(),
                     StatisticRow(photo: photo, color: color),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                      child: Column( 
-                        crossAxisAlignment: CrossAxisAlignment.start, 
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: Text(
-                              'Exif',
-                              style: TextStyle(  
-                                fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-                                fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          ),
-                          Row(  
-                            children: [
-                              ExifBox(value: photo.exif.aperture ?? '-', title: 'Aperture',),
-                              ExifBox(value: photo.exif.exposureTime ?? '-', title: 'Exposure Time',)
-                            ],
-                          ),
-                          Row(  
-                            children: [
-                              ExifBox(value: photo.exif.focalLength ?? '-', title: 'Focal Length',),
-                              ExifBox(value: photo.exif.iso.toString() ?? '-', title: 'ISO',)
-                            ],
-                          ),
-                          Row(  
-                            children: [
-                              ExifBox(value: photo.exif.make ?? '-', title: 'Make',),
-                              ExifBox(value: photo.exif.model ?? '-', title: 'Model',)
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    ExifRow(photo: photo),
+                    photo.location != null ? LocationRow(photo: photo) : Container(),
                     TagsRow(tags: photo.tags,),
                   ]),
                 ),
@@ -99,6 +71,127 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
             );
           }
         },
+      ),
+    );
+  }
+}
+
+class LocationRow extends StatelessWidget {
+  const LocationRow({
+    Key key,
+    @required this.photo,
+  }) : super(key: key);
+
+  final Photo photo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: Column(  
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(  
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(  
+                Icons.place_rounded
+              ),
+              SizedBox(width: 5),
+              Text(
+                photo.location.name(),
+                style: TextStyle(  
+                  fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                  fontWeight: FontWeight.bold
+                ),
+              )
+            ],
+          ),
+          photo.location.position != null && photo.location.position.isNotNull() ? Container(  
+            margin: EdgeInsets.only(top: 10),
+            height: 180,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: FlutterMap(  
+                options: MapOptions(
+                  interactive: false,  
+                  center: LatLng(photo.location.position.latitude, photo.location.position.longitude),
+                  zoom: 13.0
+                ),
+                layers: [
+                  new TileLayerOptions(
+                    urlTemplate: "https://api.mapbox.com/styles/v1/dscyrescotti/ckird7b964n5u17s16s6s90mf/tiles/256/{z}/{x}/{y}@2x?access_token=${DotEnv().env['MAPBOX_TOKEN']}",
+                    additionalOptions: {
+                      "accessToken": DotEnv().env['MAPBOX_TOKEN'],
+                      "id": "mapbox.mapbox-streets-v8"
+                    }
+                  ),
+                  new MarkerLayerOptions(
+                    markers: [
+                      Marker(
+                        point: LatLng(photo.location.position.latitude, photo.location.position.longitude),
+                        builder: (context) => Icon(  
+                          Icons.place_rounded,
+                          size: 30,
+                          color: Colors.red,
+                        )
+                      )
+                    ]
+                  )
+                ],
+              ),
+            ),
+          ) : Container()
+        ],
+      ),
+    );
+  }
+}
+
+class ExifRow extends StatelessWidget {
+  const ExifRow({
+    Key key,
+    @required this.photo,
+  }) : super(key: key);
+
+  final Photo photo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      child: Column( 
+        crossAxisAlignment: CrossAxisAlignment.start, 
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Text(
+              'Exif',
+              style: TextStyle(  
+                fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                fontWeight: FontWeight.bold
+              ),
+            ),
+          ),
+          Row(  
+            children: [
+              ExifBox(value: photo.exif.aperture ?? '-', title: 'Aperture',),
+              ExifBox(value: photo.exif.exposureTime ?? '-', title: 'Exposure Time',)
+            ],
+          ),
+          Row(  
+            children: [
+              ExifBox(value: photo.exif.focalLength ?? '-', title: 'Focal Length',),
+              ExifBox(value: (photo.exif.iso ?? '-').toString(), title: 'ISO',)
+            ],
+          ),
+          Row(  
+            children: [
+              ExifBox(value: photo.exif.make ?? '-', title: 'Make',),
+              ExifBox(value: photo.exif.model ?? '-', title: 'Model',)
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -177,65 +270,38 @@ class TagsRow extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       padding: tags.length == 0 ? EdgeInsets.zero : EdgeInsets.only(bottom: 10),
-      child: Tags(  
-        spacing: 8,
-        runSpacing: 8,
-        alignment: WrapAlignment.start,
-        itemCount: tags.length,
-        itemBuilder: (index) => ItemTags(
-          textStyle: TextStyle(  
-            fontSize: Theme.of(context).textTheme.caption.fontSize,
-            fontWeight: FontWeight.normal
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,  
+        children: [
+          Text(
+            'Tags',
+            style: TextStyle(  
+              fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+              fontWeight: FontWeight.bold
+            ),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          index: index, 
-          title: tags[index].title,
-          border: Border.all(width: 0.5, color: Colors.grey.withOpacity(0.3)),
-          elevation: 0,
-          textActiveColor: Colors.black,
-          activeColor: Colors.grey.withOpacity(0.2),
-        ),
-      ),
-    );
-  }
-}
-
-class StatisticBox extends StatelessWidget {
-  const StatisticBox({Key key, this.title, this.value}) : super(key: key);
-
-  final String value;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(  
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 0.5, color: Colors.black.withOpacity(0.5))
-        ),
-        child: Column(  
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              value,
-              style: TextStyle(  
-                fontSize: Theme.of(context).textTheme.headline6.fontSize,
-                fontWeight: FontWeight.bold,
+          SizedBox(height: 10,),
+          Tags(  
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.start,
+            itemCount: tags.length,
+            itemBuilder: (index) => ItemTags(
+              textStyle: TextStyle(  
+                fontSize: Theme.of(context).textTheme.caption.fontSize,
+                fontWeight: FontWeight.normal
               ),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              index: index, 
+              title: tags[index].title,
+              border: Border.all(width: 0.5, color: Colors.grey.withOpacity(0.3)),
+              elevation: 0,
+              textActiveColor: Colors.black,
+              activeColor: Colors.grey.withOpacity(0.2),
             ),
-            Text(
-              title,
-              style: TextStyle(  
-                fontSize: Theme.of(context).textTheme.bodyText2.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        ],
+      )
     );
   }
 }
@@ -297,30 +363,54 @@ class ProfileRow extends StatelessWidget {
               color: color,
             ),
             child: ClipOval(
-              child: Image.network(
-                photo.user.profileImage.large
+              child: InkWell(
+                customBorder: RoundedRectangleBorder(  
+                  borderRadius: BorderRadius.circular(30)
+                ),
+                onTap: () {
+                  Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
+                },
+                child: Image.network(
+                  photo.user.profileImage.large
+                ),
               ),
             ),
             margin: EdgeInsets.only(right: 10),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                photo.user.name,
-                style: TextStyle(  
-                  fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
-                  fontWeight: FontWeight.bold
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
+                  },
+                  child: Text(
+                    photo.user.name,
+                    style: TextStyle(  
+                      fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
+                      fontWeight: FontWeight.bold
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 ),
-              ),
-              Text(
-                '@${photo.user.username}',
-                style: TextStyle(  
-                  fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-                  fontWeight: FontWeight.normal
+                InkWell( 
+                  onTap: () {
+                    Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
+                  }, 
+                  child: Text(
+                    '@${photo.user.username}',
+                    style: TextStyle(  
+                      fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                      fontWeight: FontWeight.normal
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 ),
-              )
-            ],
+              ],
+            ),
           )
         ],
       ), 
