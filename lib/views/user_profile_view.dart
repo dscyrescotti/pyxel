@@ -82,6 +82,7 @@ class __UserProfileViewState extends State<_UserProfileView> {
           },
           body: Builder(
             builder: (context) {
+              final user = viewModel.user;
               return Column(  
                 children: [
                   TabBar(
@@ -103,8 +104,8 @@ class __UserProfileViewState extends State<_UserProfileView> {
                     child: TabBarView(
                       physics: BouncingScrollPhysics(),
                       children: [
-                        UserPhotoGridView(controller: controller,),
-                        UserLikeGridView(controller: controller,),
+                        user.totalPhotos != 0 ? UserPhotoGridView(controller: controller,) : Center(child: Text('No photos'),),
+                        user.totalLikes != 0 ? UserLikeGridView(controller: controller,) : Center(child: Text('No likes'),),
                         Text('Collections')
                       ],
                     ),
@@ -172,7 +173,6 @@ class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKee
     final viewModel = Provider.of<UserProfileViewModel>(context);
     return viewModel.photos.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
       physics: BouncingScrollPhysics(),
-      key: UniqueKey(),
       controller: _controller,
       padding: EdgeInsets.all(10),
       gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
@@ -199,7 +199,7 @@ class UserLikeGridView extends StatefulWidget {
   _UserLikeGridViewState createState() => _UserLikeGridViewState();
 }
 
-class _UserLikeGridViewState extends State<UserLikeGridView> {
+class _UserLikeGridViewState extends State<UserLikeGridView> with AutomaticKeepAliveClientMixin {
 
   ScrollController _controller;
 
@@ -239,6 +239,7 @@ class _UserLikeGridViewState extends State<UserLikeGridView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final viewModel = Provider.of<UserProfileViewModel>(context);
     return viewModel.likes.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
       physics: BouncingScrollPhysics(),
@@ -255,6 +256,8 @@ class _UserLikeGridViewState extends State<UserLikeGridView> {
     );
   }
   
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class StatisticRow extends StatelessWidget {
