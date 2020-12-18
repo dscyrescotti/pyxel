@@ -35,6 +35,8 @@ dependencies:
   waterfall_flow: ^2.0.5
   cupertino_icons: ^1.0.0
   flutter_map: ^0.10.1+1
+  extended_nested_scroll_view: ^2.0.0
+  loading_more_list: ^3.1.1
 
 dev_dependencies:
   flutter_test:

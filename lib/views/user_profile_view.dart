@@ -33,12 +33,20 @@ class _UserProfileView extends StatefulWidget {
 
 class __UserProfileViewState extends State<_UserProfileView> {
 
+  ScrollController controller;
   @override
   void initState() {
     super.initState();
+    controller = ScrollController();
     Provider.of<UserProfileViewModel>(context, listen: false).fetchUser();
     Provider.of<UserProfileViewModel>(context, listen: false).fetchPhotos();
     Provider.of<UserProfileViewModel>(context, listen: false).fetchLikes();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -65,7 +73,8 @@ class __UserProfileViewState extends State<_UserProfileView> {
       body: viewModel.user == null ? CircularProgress() : DefaultTabController( 
         length: 3,
         child: NestedScrollView(
-          physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          controller: controller,
+          physics: BouncingScrollPhysics(),
           headerSliverBuilder: (context, _) {
             final user = viewModel.user;
             return [
@@ -74,7 +83,6 @@ class __UserProfileViewState extends State<_UserProfileView> {
           },
           body: Builder(
             builder: (context) {
-              // final innerController = PrimaryScrollController.of(context);
               return Column(  
                 children: [
                   TabBar(
@@ -113,7 +121,9 @@ class __UserProfileViewState extends State<_UserProfileView> {
 }
 
 class UserPhotoGridView extends StatefulWidget {
-  UserPhotoGridView({Key key}) : super(key: key);
+  UserPhotoGridView({Key key,}) : super(key: key);
+
+  // final ScrollController controller;
 
   @override
   _UserPhotoGridViewState createState() => _UserPhotoGridViewState();
@@ -121,9 +131,38 @@ class UserPhotoGridView extends StatefulWidget {
 
 class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKeepAliveClientMixin {
 
+  // ScrollController _controller;
+
   @override
   void initState() {
     super.initState();
+    // _controller = ScrollController();
+    // _controller.addListener(() {
+    //   final innerPosition = _controller.position.pixels;
+    //   final maxInnerPosition = _controller.position.maxScrollExtent;
+    //   final maxOutterPosition = widget.controller.position.maxScrollExtent;
+    //   final currentOutterPosition = widget.controller.position.pixels;
+    //     print('[Debug]: $innerPosition, $maxOutterPosition, $currentOutterPosition, ${_controller.position.maxScrollExtent}');
+    //   if (innerPosition == maxInnerPosition) {
+    //     print('[Debug]: reach the bottom');
+    //   }
+    //   if(innerPosition >= 0 && currentOutterPosition < maxOutterPosition) {
+    //     print('[True]: $innerPosition, $maxOutterPosition, $currentOutterPosition, ${_controller.position.maxScrollExtent}');
+    //     widget.controller.position.jumpTo(innerPosition + currentOutterPosition);
+    //   }else{
+    //     var currenParentPos = innerPosition + currentOutterPosition;
+    //     widget.controller.position.jumpTo(currenParentPos);
+    //   }
+    // });
+    // widget.controller.addListener(() {
+    //   final currentOutterPosition = widget.controller.position.pixels;
+    //   final maxOutterPosition = widget.controller.position.maxScrollExtent;
+    //     print('[Parent]: ${widget.controller.position.pixels} ${widget.controller.position.maxScrollExtent}');
+    //   if (currentOutterPosition <= 0) {
+    //     print('[Parent]: ${widget.controller.position.pixels} ${_controller.position.pixels}');
+    //     _controller.position.jumpTo(0);
+    //   }
+    // });
   }
 
   @override
@@ -132,6 +171,8 @@ class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKee
     final viewModel = Provider.of<UserProfileViewModel>(context);
     return viewModel.photos.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
       physics: BouncingScrollPhysics(),
+      key: UniqueKey(),
+      // controller: _controller,
       padding: EdgeInsets.all(10),
       gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
