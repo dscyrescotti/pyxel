@@ -12,6 +12,7 @@ import 'package:pyxel/views/user_profile_view.dart';
 import '../utils/numeral.dart';
 import 'package:latlong/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../components/statistic_box.dart';
 
 class PhotoDetailsView extends StatelessWidget {
   const PhotoDetailsView({Key key, this.id}) : super(key: key);
@@ -305,46 +306,6 @@ class TagsRow extends StatelessWidget {
   }
 }
 
-class StatisticBox extends StatelessWidget {
-  const StatisticBox({Key key, this.title, this.value}) : super(key: key);
-
-  final String value;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(  
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 0.5, color: Colors.black.withOpacity(0.5))
-        ),
-        child: Column(  
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              value,
-              style: TextStyle(  
-                fontSize: Theme.of(context).textTheme.headline6.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              title,
-              style: TextStyle(  
-                fontSize: Theme.of(context).textTheme.bodyText2.fontSize,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class DescriptionRow extends StatelessWidget {
   const DescriptionRow({
     Key key,
@@ -416,34 +377,40 @@ class ProfileRow extends StatelessWidget {
             ),
             margin: EdgeInsets.only(right: 10),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
-                },
-                child: Text(
-                  photo.user.name,
-                  style: TextStyle(  
-                    fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
-                    fontWeight: FontWeight.bold
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
+                  },
+                  child: Text(
+                    photo.user.name,
+                    style: TextStyle(  
+                      fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
+                      fontWeight: FontWeight.bold
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
-              ),
-              InkWell( 
-                onTap: () {
-                  Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
-                }, 
-                child: Text(
-                  '@${photo.user.username}',
-                  style: TextStyle(  
-                    fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-                    fontWeight: FontWeight.normal
+                InkWell( 
+                  onTap: () {
+                    Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
+                  }, 
+                  child: Text(
+                    '@${photo.user.username}',
+                    style: TextStyle(  
+                      fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                      fontWeight: FontWeight.normal
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           )
         ],
       ), 

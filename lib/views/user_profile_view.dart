@@ -1,8 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/components/pop_button.dart';
 import 'package:pyxel/view_models/user_profile_view_model.dart';
+import '../models/user.dart';
+import '../components/statistic_box.dart';
+import '../utils/numeral.dart';
+import 'package:waterfall_flow/waterfall_flow.dart';
+import 'package:pyxel/components/image_card.dart';
 
 class UserProfileView extends StatelessWidget {
   const UserProfileView({Key key, this.username}) : super(key: key);
@@ -31,6 +37,8 @@ class __UserProfileViewState extends State<_UserProfileView> {
   void initState() {
     super.initState();
     Provider.of<UserProfileViewModel>(context, listen: false).fetchUser();
+    Provider.of<UserProfileViewModel>(context, listen: false).fetchPhotos();
+    Provider.of<UserProfileViewModel>(context, listen: false).fetchLikes();
   }
 
   @override
@@ -42,7 +50,7 @@ class __UserProfileViewState extends State<_UserProfileView> {
         leading: PopButton(
           color: Colors.white,
         ),
-        title: Text('Profile'),
+        title: Text(viewModel.username),
         textTheme: Theme.of(context).textTheme,
         centerTitle: true,
         elevation: 0,
@@ -58,48 +66,249 @@ class __UserProfileViewState extends State<_UserProfileView> {
         length: 3,
         child: NestedScrollView(
           physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
+          headerSliverBuilder: (context, _) {
+            final user = viewModel.user;
             return [
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  Container(
-                    height: 100
-                  )
-                ]),
-              )
+              ProfileHeader(user: user)
             ];
           },
-          body: Column(  
-            children: [
-              TabBar(
-                labelColor: Colors.black,
-                labelStyle: Theme.of(context).textTheme.button,
-                tabs: [
-                  Tab(  
-                    text: 'Photos',
+          body: Builder(
+            builder: (context) {
+              // final innerController = PrimaryScrollController.of(context);
+              return Column(  
+                children: [
+                  TabBar(
+                    labelColor: Colors.black,
+                    labelStyle: Theme.of(context).textTheme.button,
+                    tabs: [
+                      Tab(  
+                        text: 'Photos',
+                      ),
+                      Tab(  
+                        text: 'Likes',
+                      ),
+                      Tab(  
+                        text: 'Collections',
+                      ),
+                    ],
                   ),
-                  Tab(  
-                    text: 'Likes',
-                  ),
-                  Tab(  
-                    text: 'Collections',
-                  ),
+                  Expanded(  
+                    child: TabBarView(
+                      physics: BouncingScrollPhysics(),
+                      children: [
+                        UserPhotoGridView(),
+                        UserLikeGridView(),
+                        Text('Collections')
+                      ],
+                    ),
+                  )
                 ],
-              ),
-              Expanded(  
-                child: TabBarView(
-                  physics: BouncingScrollPhysics(),
+              );
+            },
+          ),
+        ),
+      )
+    );
+  }
+}
+
+class UserPhotoGridView extends StatefulWidget {
+  UserPhotoGridView({Key key}) : super(key: key);
+
+  @override
+  _UserPhotoGridViewState createState() => _UserPhotoGridViewState();
+}
+
+class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKeepAliveClientMixin {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final viewModel = Provider.of<UserProfileViewModel>(context);
+    return viewModel.photos.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
+      physics: BouncingScrollPhysics(),
+      padding: EdgeInsets.all(10),
+      gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: viewModel.photos.length,
+      itemBuilder: (context, index) => ImageCard(photo: viewModel.photos[index]),
+      cacheExtent: 1000,
+  );
+  }
+
+  // _scrollListener() {
+  //   if (controller.offset == controller.position.maxScrollExtent && !controller.position.outOfRange) {
+  //     print("[Debug]: reach the bottom");
+  //     // Provider.of<UserProfileViewModel>(context, listen: false).fetchPhotos();
+  //   }
+  // }
+  
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class UserLikeGridView extends StatefulWidget {
+  UserLikeGridView({Key key}) : super(key: key);
+
+  @override
+  _UserLikeGridViewState createState() => _UserLikeGridViewState();
+}
+
+class _UserLikeGridViewState extends State<UserLikeGridView> with AutomaticKeepAliveClientMixin {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final viewModel = Provider.of<UserProfileViewModel>(context);
+    return viewModel.likes.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
+          physics: BouncingScrollPhysics(),
+          padding: EdgeInsets.all(10),
+          gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: viewModel.likes.length,
+          itemBuilder: (context, index) => ImageCard(photo: viewModel.likes[index]),
+          cacheExtent: 1000,
+      );
+  }
+
+  // _scrollListener() {
+  //   if (widget.controller.offset == widget.controller.position.maxScrollExtent && !widget.controller.position.outOfRange) {
+  //     print("[Debug]: reach the bottom");
+  //     Provider.of<UserProfileViewModel>(context, listen: false).fetchPhotos();
+  //   }
+  // }
+  
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class StatisticRow extends StatelessWidget {
+  const StatisticRow({
+    Key key,
+    @required this.user,
+  }) : super(key: key);
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 5),
+      child: Row(  
+        children: [
+          StatisticBox(title: 'Photos', value: Numeral(user.totalPhotos).value(),),
+          StatisticBox(title: 'Followers', value: Numeral(user.followersCount).value(),),
+          StatisticBox(title: 'Following', value: Numeral(user.followingCount).value(),),
+        ],
+      ),
+    );
+  }
+}
+
+
+class ProfileHeader extends StatelessWidget {
+  const ProfileHeader({
+    Key key,
+    @required this.user,
+  }) : super(key: key);
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverList(
+      delegate: SliverChildListDelegate([
+        Container(
+          padding: EdgeInsets.all(5),
+          child: Column(  
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,  
                   children: [
-                    Text('Photos'),
-                    Text('Likes'),
-                    Text('Collections')
+                    CircleAvatar(
+                      radius: 36,
+                      backgroundColor: Colors.grey,
+                      child: CircleAvatar( 
+                        radius: 35,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(
+                          user.profileImage.large
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Column(  
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text( 
+                              user.name,
+                              style: TextStyle(  
+                                fontSize: Theme.of(context).textTheme.headline6.fontSize,
+                                fontWeight: FontWeight.w600
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text( 
+                              '@${user.username}',
+                              style: TextStyle(  
+                                fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
+                                fontWeight: FontWeight.w500
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              StatisticRow(user: user),
+              user.bio == null ? Container() : Container(
+                width: double.infinity,  
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Column( 
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bio',
+                      style: TextStyle(  
+                        fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    Text(
+                      user.bio,
+                      style: Theme.of(context).textTheme.bodyText2
+                    ),
                   ],
                 ),
               )
             ],
           ),
-        ),
-      )
+        )
+      ]),
     );
   }
 }

@@ -22,8 +22,12 @@ class User {
   final int totalCollections;
   @JsonKey(name: "profile_image")
   final Profile profileImage;
+  @JsonKey(name: "followers_count")
+  final int followersCount;
+  @JsonKey(name: "following_count")
+  final int followingCount;
 
-  User({this.id, this.updatedAt, this.username, this.name, this.portfolioUrl, this.bio, this.location, this.totalLikes, this.totalPhotos, this.totalCollections, this.profileImage});
+  User({this.id, this.updatedAt, this.username, this.name, this.portfolioUrl, this.bio, this.location, this.totalLikes, this.totalPhotos, this.totalCollections, this.profileImage, this.followersCount, this.followingCount});
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
