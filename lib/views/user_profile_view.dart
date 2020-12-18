@@ -32,7 +32,6 @@ class _UserProfileView extends StatefulWidget {
 }
 
 class __UserProfileViewState extends State<_UserProfileView> {
-
   ScrollController controller;
   @override
   void initState() {
@@ -104,8 +103,8 @@ class __UserProfileViewState extends State<_UserProfileView> {
                     child: TabBarView(
                       physics: BouncingScrollPhysics(),
                       children: [
-                        UserPhotoGridView(),
-                        UserLikeGridView(),
+                        UserPhotoGridView(controller: controller,),
+                        UserLikeGridView(controller: controller,),
                         Text('Collections')
                       ],
                     ),
@@ -121,9 +120,9 @@ class __UserProfileViewState extends State<_UserProfileView> {
 }
 
 class UserPhotoGridView extends StatefulWidget {
-  UserPhotoGridView({Key key,}) : super(key: key);
+  UserPhotoGridView({Key key, this.controller}) : super(key: key);
 
-  // final ScrollController controller;
+  final ScrollController controller;
 
   @override
   _UserPhotoGridViewState createState() => _UserPhotoGridViewState();
@@ -131,38 +130,40 @@ class UserPhotoGridView extends StatefulWidget {
 
 class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKeepAliveClientMixin {
 
-  // ScrollController _controller;
+  ScrollController _controller;
 
   @override
   void initState() {
     super.initState();
-    // _controller = ScrollController();
-    // _controller.addListener(() {
-    //   final innerPosition = _controller.position.pixels;
-    //   final maxInnerPosition = _controller.position.maxScrollExtent;
-    //   final maxOutterPosition = widget.controller.position.maxScrollExtent;
-    //   final currentOutterPosition = widget.controller.position.pixels;
-    //     print('[Debug]: $innerPosition, $maxOutterPosition, $currentOutterPosition, ${_controller.position.maxScrollExtent}');
-    //   if (innerPosition == maxInnerPosition) {
-    //     print('[Debug]: reach the bottom');
-    //   }
-    //   if(innerPosition >= 0 && currentOutterPosition < maxOutterPosition) {
-    //     print('[True]: $innerPosition, $maxOutterPosition, $currentOutterPosition, ${_controller.position.maxScrollExtent}');
-    //     widget.controller.position.jumpTo(innerPosition + currentOutterPosition);
-    //   }else{
-    //     var currenParentPos = innerPosition + currentOutterPosition;
-    //     widget.controller.position.jumpTo(currenParentPos);
-    //   }
-    // });
-    // widget.controller.addListener(() {
-    //   final currentOutterPosition = widget.controller.position.pixels;
-    //   final maxOutterPosition = widget.controller.position.maxScrollExtent;
-    //     print('[Parent]: ${widget.controller.position.pixels} ${widget.controller.position.maxScrollExtent}');
-    //   if (currentOutterPosition <= 0) {
-    //     print('[Parent]: ${widget.controller.position.pixels} ${_controller.position.pixels}');
-    //     _controller.position.jumpTo(0);
-    //   }
-    // });
+    _controller = ScrollController();
+    _controller.addListener(() {
+      final innerPosition = _controller.position.pixels;
+      final maxInnerPosition = _controller.position.maxScrollExtent;
+      final maxOutterPosition = widget.controller.position.maxScrollExtent;
+      final currentOutterPosition = widget.controller.position.pixels;
+      if (innerPosition == maxInnerPosition) {
+        print('[Photo]: reach the bottom');
+        Provider.of<UserProfileViewModel>(context, listen: false).fetchPhotos();
+      }
+      if (innerPosition >= 0 && currentOutterPosition < maxOutterPosition) {
+        widget.controller.position.jumpTo(innerPosition + currentOutterPosition);
+      } else {
+        var currenParentPos = innerPosition + currentOutterPosition;
+        widget.controller.position.jumpTo(currenParentPos);
+      }
+    });
+    widget.controller.addListener(() {
+      final currentOutterPosition = widget.controller.position.pixels;
+      if (currentOutterPosition <= 0) {
+        _controller.position.jumpTo(0);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -172,7 +173,7 @@ class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKee
     return viewModel.photos.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
       physics: BouncingScrollPhysics(),
       key: UniqueKey(),
-      // controller: _controller,
+      controller: _controller,
       padding: EdgeInsets.all(10),
       gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -182,60 +183,78 @@ class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKee
       itemCount: viewModel.photos.length,
       itemBuilder: (context, index) => ImageCard(photo: viewModel.photos[index]),
       cacheExtent: 1000,
-  );
+    );
   }
 
-  // _scrollListener() {
-  //   if (controller.offset == controller.position.maxScrollExtent && !controller.position.outOfRange) {
-  //     print("[Debug]: reach the bottom");
-  //     // Provider.of<UserProfileViewModel>(context, listen: false).fetchPhotos();
-  //   }
-  // }
-  
   @override
   bool get wantKeepAlive => true;
 }
 
 class UserLikeGridView extends StatefulWidget {
-  UserLikeGridView({Key key}) : super(key: key);
+  UserLikeGridView({Key key, this.controller}) : super(key: key);
+
+  final ScrollController controller;
 
   @override
   _UserLikeGridViewState createState() => _UserLikeGridViewState();
 }
 
-class _UserLikeGridViewState extends State<UserLikeGridView> with AutomaticKeepAliveClientMixin {
+class _UserLikeGridViewState extends State<UserLikeGridView> {
+
+  ScrollController _controller;
+
   @override
   void initState() {
     super.initState();
+    _controller = ScrollController();
+    _controller.addListener(() {
+      final innerPosition = _controller.position.pixels;
+      final maxInnerPosition = _controller.position.maxScrollExtent;
+      final maxOutterPosition = widget.controller.position.maxScrollExtent;
+      final currentOutterPosition = widget.controller.position.pixels;
+      if (innerPosition == maxInnerPosition) {
+        print('[Like]: reach the bottom');
+        Provider.of<UserProfileViewModel>(context, listen: false).fetchLikes();
+      }
+      if (innerPosition >= 0 && currentOutterPosition < maxOutterPosition) {
+        widget.controller.position.jumpTo(innerPosition + currentOutterPosition);
+      } else {
+        var currenParentPos = innerPosition + currentOutterPosition;
+        widget.controller.position.jumpTo(currenParentPos);
+      }
+    });
+    widget.controller.addListener(() {
+      final currentOutterPosition = widget.controller.position.pixels;
+      if (currentOutterPosition <= 0) {
+        _controller.position.jumpTo(0);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final viewModel = Provider.of<UserProfileViewModel>(context);
     return viewModel.likes.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
-          physics: BouncingScrollPhysics(),
-          padding: EdgeInsets.all(10),
-          gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemCount: viewModel.likes.length,
-          itemBuilder: (context, index) => ImageCard(photo: viewModel.likes[index]),
-          cacheExtent: 1000,
-      );
+      physics: BouncingScrollPhysics(),
+      controller: _controller,
+      padding: EdgeInsets.all(10),
+      gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: viewModel.likes.length,
+      itemBuilder: (context, index) => ImageCard(photo: viewModel.likes[index]),
+      cacheExtent: 1000,
+    );
   }
-
-  // _scrollListener() {
-  //   if (widget.controller.offset == widget.controller.position.maxScrollExtent && !widget.controller.position.outOfRange) {
-  //     print("[Debug]: reach the bottom");
-  //     Provider.of<UserProfileViewModel>(context, listen: false).fetchPhotos();
-  //   }
-  // }
   
-  @override
-  bool get wantKeepAlive => true;
 }
 
 class StatisticRow extends StatelessWidget {
