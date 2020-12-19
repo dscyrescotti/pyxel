@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pyxel/views/collections_view.dart';
 import 'package:pyxel/views/photos_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -13,7 +14,7 @@ class _HomeViewState extends State<HomeView> {
   int _selected = 0;
   final List<Widget> _children = [
     PhotosView(),
-    Text('Collections')
+    CollectionsView()
   ];
 
   @override

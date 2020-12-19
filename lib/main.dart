@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pyxel/view_models/collections_view_model.dart';
 import 'package:pyxel/view_models/photos_view_model.dart';
 import './views/home.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
       ),
       home: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => PhotosViewModel()) 
+          ChangeNotifierProvider(create: (context) => PhotosViewModel()),
+          ChangeNotifierProvider(create: (context) => CollectionsViewModel())
         ],
         builder: (context, child) => HomeView(),
       ),

@@ -7,7 +7,7 @@ part 'collection.g.dart';
 
 @JsonSerializable()
 class Collection {
-  final int id;
+  final String id;
   final String title;
   final String description;
   @JsonKey(name: 'published_at', fromJson: toDateTime, toJson: toString)

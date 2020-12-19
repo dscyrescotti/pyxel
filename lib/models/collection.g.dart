@@ -8,7 +8,7 @@ part of 'collection.dart';
 
 Collection _$CollectionFromJson(Map<String, dynamic> json) {
   return Collection(
-    id: json['id'] as int,
+    id: json['id'] as String,
     title: json['title'] as String,
     description: json['description'] as String,
     publishedAt: toDateTime(json['published_at'] as String),
