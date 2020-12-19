@@ -32,8 +32,7 @@ class _PhotosViewState extends State<PhotosView> {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<PhotosViewModel>(context);
     print("[Build]: build widget.");
-    return Scaffold(
-      body: viewModel.photos.length == 0 ? CircularProgress() : SafeArea(
+    return viewModel.photos.length == 0 ? CircularProgress() : SafeArea(
         child: CustomScrollView(  
           controller: _controller,
           physics: BouncingScrollPhysics(),
@@ -84,8 +83,7 @@ class _PhotosViewState extends State<PhotosView> {
             )
           ],
         ),
-      )
-    );
+      );
   }
   _scrollListener() {
     if (_controller.offset == _controller.position.maxScrollExtent && !_controller.position.outOfRange) {
