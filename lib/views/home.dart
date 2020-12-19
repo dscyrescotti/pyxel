@@ -20,8 +20,12 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _children[_selected],  
+      body: IndexedStack(
+        index: _selected,
+        children: _children,
+      ),  
       bottomNavigationBar: BottomNavigationBar( 
+        currentIndex: _selected,
         onTap: (value) {
           setState(() {
             _selected = value;

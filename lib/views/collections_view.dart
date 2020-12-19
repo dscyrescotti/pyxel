@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
+import 'package:pyxel/components/collection_card.dart';
 import 'package:pyxel/view_models/collections_view_model.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
@@ -31,7 +32,7 @@ class _CollectionsViewState extends State<CollectionsView> {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<CollectionsViewModel>(context);
     print("[Build]: build widget.");
-    return viewModel.collections.length == 0 ? CircularProgress() : SafeArea(
+    return SafeArea(
         child: CustomScrollView(  
           controller: _controller,
           physics: BouncingScrollPhysics(),
@@ -66,19 +67,22 @@ class _CollectionsViewState extends State<CollectionsView> {
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    return Container(height: 100, color: Colors.red,);
+                    return CollectionCard(collection: viewModel.collections[index]);
                   },
                   childCount: viewModel.collections.length
                 ),
               ),
             ),
-            SliverList(
+            viewModel.collections.isNotEmpty ? SliverList(
               delegate: SliverChildListDelegate([
                 Padding(
                   padding: EdgeInsets.only(top: 5, bottom: 10),
                   child: CircularProgress(),
                 )
               ]),
+            ) : SliverFillRemaining(
+              hasScrollBody: false,
+              child: CircularProgress()
             )
           ],
         ),

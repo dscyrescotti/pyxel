@@ -32,7 +32,7 @@ class _PhotosViewState extends State<PhotosView> {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<PhotosViewModel>(context);
     print("[Build]: build widget.");
-    return viewModel.photos.length == 0 ? CircularProgress() : SafeArea(
+    return SafeArea(
         child: CustomScrollView(  
           controller: _controller,
           physics: BouncingScrollPhysics(),
@@ -73,13 +73,16 @@ class _PhotosViewState extends State<PhotosView> {
                 ),
               ),
             ),
-            SliverList(
+            viewModel.photos.isNotEmpty ? SliverList(
               delegate: SliverChildListDelegate([
                 Padding(
                   padding: EdgeInsets.only(top: 5, bottom: 10),
                   child: CircularProgress(),
                 )
               ]),
+            ) : SliverFillRemaining(
+              hasScrollBody: false,
+              child: CircularProgress()
             )
           ],
         ),
