@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pyxel/models/collection.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
+import 'package:pyxel/views/collection_details_view.dart';
+import './route_transition.dart';
 
 class CollectionCard extends StatelessWidget {
   const CollectionCard({Key key, this.collection}) : super(key: key);
@@ -17,7 +19,7 @@ class CollectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       onPressed: () {
-        // Navigator.push(context, SlideRoute(page: ));
+        Navigator.push(context, SlideRoute(page: CollectionDetailsView(id: collection.id)));
       },
       padding: EdgeInsets.all(0),
       child: ClipRRect(  
