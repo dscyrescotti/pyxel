@@ -120,6 +120,8 @@ class __UserProfileViewState extends State<_UserProfileView> {
   }
 }
 
+
+
 class UserPhotoGridView extends StatefulWidget {
   UserPhotoGridView({Key key, this.controller}) : super(key: key);
 
@@ -370,7 +372,7 @@ class ProfileHeader extends StatelessWidget {
               )
             ],
           ),
-        )
+        ),
       ]),
     );
   }

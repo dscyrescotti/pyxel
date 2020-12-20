@@ -2,23 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
-import 'package:pyxel/components/image_card.dart';
-import 'package:pyxel/view_models/photos_view_model.dart';
+import 'package:pyxel/components/collection_card.dart';
+import 'package:pyxel/view_models/collections_view_model.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
-class PhotosView extends StatefulWidget {
-  PhotosView({Key key}) : super(key: key);
+class CollectionsView extends StatefulWidget {
+  CollectionsView({Key key}) : super(key: key);
 
   @override
-  _PhotosViewState createState() => _PhotosViewState();
+  _CollectionsViewState createState() => _CollectionsViewState();
 }
 
-class _PhotosViewState extends State<PhotosView> {
+class _CollectionsViewState extends State<CollectionsView> {
   ScrollController _controller;
   @override
   void initState() {
     super.initState();
-    Provider.of<PhotosViewModel>(context, listen: false).fetchPhotos();
+    Provider.of<CollectionsViewModel>(context, listen: false).fetchCollections();
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
   }
@@ -30,7 +30,7 @@ class _PhotosViewState extends State<PhotosView> {
   }
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<PhotosViewModel>(context);
+    final viewModel = Provider.of<CollectionsViewModel>(context);
     print("[Build]: build widget.");
     return SafeArea(
         child: CustomScrollView(  
@@ -67,13 +67,13 @@ class _PhotosViewState extends State<PhotosView> {
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    return ImageCard(photo: viewModel.photos[index]);
+                    return CollectionCard(collection: viewModel.collections[index]);
                   },
-                  childCount: viewModel.photos.length
+                  childCount: viewModel.collections.length
                 ),
               ),
             ),
-            viewModel.photos.isNotEmpty ? SliverList(
+            viewModel.collections.isNotEmpty ? SliverList(
               delegate: SliverChildListDelegate([
                 Padding(
                   padding: EdgeInsets.only(top: 5, bottom: 10),
@@ -91,11 +91,11 @@ class _PhotosViewState extends State<PhotosView> {
   _scrollListener() {
     if (_controller.offset == _controller.position.maxScrollExtent && !_controller.position.outOfRange) {
       print("[Debug]: reach the bottom");
-      Provider.of<PhotosViewModel>(context, listen: false).fetchPhotos();
+      Provider.of<CollectionsViewModel>(context, listen: false).fetchCollections();
     }
   }
   Future<void> _onRefresh() async {
-    await Provider.of<PhotosViewModel>(context, listen: false).fetchPhotos(isRefresh: true);
+    await Provider.of<CollectionsViewModel>(context, listen: false).fetchCollections(isRefresh: true);
   }
 }
 

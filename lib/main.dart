@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pyxel/view_models/collections_view_model.dart';
+import 'package:pyxel/view_models/photos_view_model.dart';
 import './views/home.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,7 +24,13 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme
         )
       ),
-      home: HomeView(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => PhotosViewModel()),
+          ChangeNotifierProvider(create: (context) => CollectionsViewModel())
+        ],
+        builder: (context, child) => HomeView(),
+      ),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pyxel/view_models/photos_view_model.dart';
+import 'package:pyxel/views/collections_view.dart';
 import 'package:pyxel/views/photos_view.dart';
-import 'package:provider/provider.dart';
 
 class HomeView extends StatefulWidget {
   HomeView({Key key}) : super(key: key);
@@ -11,11 +10,40 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+
+  int _selected = 0;
+  final List<Widget> _children = [
+    PhotosView(),
+    CollectionsView()
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider( 
-      create: (context) => PhotosViewModel(),
-      child: PhotosView(),
+    return Scaffold(
+      body: IndexedStack(
+        index: _selected,
+        children: _children,
+      ),  
+      bottomNavigationBar: BottomNavigationBar( 
+        currentIndex: _selected,
+        onTap: (value) {
+          setState(() {
+            _selected = value;
+          });
+        }, 
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.photo),
+            label: 'Photos'
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.collections),
+            label: 'Collections'
+          )
+        ],
+      ),
     );
   }
 }
