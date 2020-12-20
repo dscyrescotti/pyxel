@@ -4,15 +4,14 @@ import 'package:flutter_tags/flutter_tags.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
-import 'package:pyxel/components/route_transition.dart';
 import 'package:pyxel/models/photo.dart';
 import 'package:pyxel/view_models/photo_details_view_model.dart';
 import 'package:pyxel/components/sliver_header.dart';
-import 'package:pyxel/views/user_profile_view.dart';
 import '../utils/numeral.dart';
 import 'package:latlong/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../components/statistic_box.dart';
+import '../components/profile_info.dart';
 
 class PhotoDetailsView extends StatelessWidget {
   const PhotoDetailsView({Key key, this.id}) : super(key: key);
@@ -353,67 +352,7 @@ class ProfileRow extends StatelessWidget {
     return Container(  
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(10),
-      child: Row( 
-        children: [
-          Container(
-            height: 60,
-            width: 60,
-            decoration: BoxDecoration( 
-              shape: BoxShape.circle,
-              color: color,
-            ),
-            child: ClipOval(
-              child: InkWell(
-                customBorder: RoundedRectangleBorder(  
-                  borderRadius: BorderRadius.circular(30)
-                ),
-                onTap: () {
-                  Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
-                },
-                child: Image.network(
-                  photo.user.profileImage.large
-                ),
-              ),
-            ),
-            margin: EdgeInsets.only(right: 10),
-          ),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
-                  },
-                  child: Text(
-                    photo.user.name,
-                    style: TextStyle(  
-                      fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
-                      fontWeight: FontWeight.bold
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-                InkWell( 
-                  onTap: () {
-                    Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
-                  }, 
-                  child: Text(
-                    '@${photo.user.username}',
-                    style: TextStyle(  
-                      fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-                      fontWeight: FontWeight.normal
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ), 
+      child: ProfileInfo(color: color, user: photo.user), 
     );
   }
 }

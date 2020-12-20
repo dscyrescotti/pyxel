@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/components/pop_button.dart';
+import 'package:pyxel/models/collection.dart';
+import 'package:pyxel/models/user.dart';
 import 'package:pyxel/view_models/collection_details_view_model.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 import '../components/image_card.dart';
 import 'package:flutter/cupertino.dart';
+import '../components/profile_info.dart';
 
 class CollectionDetailsView extends StatelessWidget {
   const CollectionDetailsView({Key key, this.id}) : super(key: key);
@@ -79,10 +82,13 @@ class __CollectionDetailsViewState extends State<_CollectionDetailsView> {
                       Text(
                         viewModel.collection.title,
                         style: TextStyle( 
-                          fontSize: Theme.of(context).textTheme.headline6.fontSize,
+                          fontSize: Theme.of(context).textTheme.headline5.fontSize,
                           fontWeight: FontWeight.bold
                         ),
-                      )
+                      ),
+                      SizedBox(height: 10),
+                      viewModel.collection.description == null ? Container() : DescriptionRow(collection: viewModel.collection),
+                      viewModel.collection.user == null ? Container() : CreatorRow(user: viewModel.collection.user),
                     ],
                   ),
                 )
@@ -134,5 +140,64 @@ class __CollectionDetailsViewState extends State<_CollectionDetailsView> {
   }
   Future<void> _onRefresh() async {
     await Provider.of<CollectionDetailsViewModel>(context, listen: false).fetchPhotos(isRefresh: true);
+  }
+}
+
+class DescriptionRow extends StatelessWidget {
+  const DescriptionRow({
+    Key key,
+    @required this.collection,
+  }) : super(key: key);
+
+  final Collection collection;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Description',
+          style: TextStyle(  
+            fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+        Text(
+          collection.description,
+          style: Theme.of(context).textTheme.bodyText2
+        ),
+      ],
+    );
+  }
+}
+
+class CreatorRow extends StatelessWidget {
+  const CreatorRow({
+    Key key,
+    @required this.user,
+  }) : super(key: key);
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 10,),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Creator',
+            style: TextStyle(  
+              fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+              fontWeight: FontWeight.bold
+            ),
+          ),
+          // SizedBox(height: 5),
+          ProfileInfo(color: Colors.grey, user: user,)
+        ],
+      ),
+    );
   }
 }
