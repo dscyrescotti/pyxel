@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../components/tags_row.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/components/pop_button.dart';
@@ -86,9 +88,35 @@ class __CollectionDetailsViewState extends State<_CollectionDetailsView> {
                           fontWeight: FontWeight.bold
                         ),
                       ),
-                      SizedBox(height: 10),
+                      Text('Published on ${DateFormat('d MMM, yyyy').format(viewModel.collection.publishedAt)}'),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: Column(  
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Total Photos',
+                              style: TextStyle(  
+                                fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            Text(
+                              viewModel.collection.totalPhotos.toString(),
+                              style: TextStyle(  
+                                fontSize: Theme.of(context).textTheme.headline6.fontSize,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       viewModel.collection.description == null ? Container() : DescriptionRow(collection: viewModel.collection),
                       viewModel.collection.user == null ? Container() : CreatorRow(user: viewModel.collection.user),
+                      viewModel.collection.tags.isEmpty ? Container() : Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: TagsRow(tags: viewModel.collection.tags),
+                      )
                     ],
                   ),
                 )
@@ -153,21 +181,24 @@ class DescriptionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Description',
-          style: TextStyle(  
-            fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-            fontWeight: FontWeight.bold
+    return Container(
+      margin: EdgeInsets.only(top: 10,),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Description',
+            style: TextStyle(  
+              fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+              fontWeight: FontWeight.bold
+            ),
           ),
-        ),
-        Text(
-          collection.description,
-          style: Theme.of(context).textTheme.bodyText2
-        ),
-      ],
+          Text(
+            collection.description,
+            style: Theme.of(context).textTheme.bodyText2
+          ),
+        ],
+      ),
     );
   }
 }
@@ -194,7 +225,7 @@ class CreatorRow extends StatelessWidget {
               fontWeight: FontWeight.bold
             ),
           ),
-          // SizedBox(height: 5),
+          SizedBox(height: 5),
           ProfileInfo(color: Colors.grey, user: user,)
         ],
       ),

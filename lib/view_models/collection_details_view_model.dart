@@ -28,6 +28,7 @@ class CollectionDetailsViewModel extends ChangeNotifier {
           collection = Collection.fromJson(data);
         },
       );
+      print(collection.tags);
       notifyListeners();
     } catch (error) {
       print(error);
@@ -54,10 +55,10 @@ class CollectionDetailsViewModel extends ChangeNotifier {
           final Iterable<dynamic> list = jsonDecode(json);
           final _photos = Photo.fromJsonArray(list);
           if (isRefresh) {
+            photoEnd = _photos.isEmpty || _photos.length < 30;
             photos = _photos;
-            photoEnd = _photos.isEmpty;
           } else {
-            photoEnd = _photos.isEmpty;
+            photoEnd = _photos.isEmpty || _photos.length < 30;
             photos.addAll(_photos);
           }
           photoPage++;

@@ -22,6 +22,9 @@ Collection _$CollectionFromJson(Map<String, dynamic> json) {
     user: json['user'] == null
         ? null
         : User.fromJson(json['user'] as Map<String, dynamic>),
+    tags: (json['tags'] as List)
+        ?.map((e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
   );
 }
 
@@ -37,4 +40,5 @@ Map<String, dynamic> _$CollectionToJson(Collection instance) =>
       'total_photos': instance.totalPhotos,
       'cover_photo': instance.coverPhoto,
       'user': instance.user,
+      'tags': instance.tags,
     };
