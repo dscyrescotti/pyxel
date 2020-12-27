@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
 import 'package:pyxel/components/image_card.dart';
+import 'package:pyxel/components/route_transition.dart';
 import 'package:pyxel/view_models/photos_view_model.dart';
+import 'package:pyxel/views/search_view.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class PhotosView extends StatefulWidget {
@@ -52,6 +54,23 @@ class _PhotosViewState extends State<PhotosView> {
                 ),
                 preferredSize: Size.fromHeight(0.4),
               ),
+              actions: [
+                Tooltip(
+                  message: 'Search',
+                  child: IconButton( 
+                    splashRadius: 28,
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.search,
+                      size: 25,
+                    ),
+                    onPressed: () {
+                      Navigator.push(context, SlideRoute(page: SearchView()));
+                    },
+                  ),
+                )
+              ],
+              iconTheme: Theme.of(context).iconTheme,
             ),
             CupertinoSliverRefreshControl(
               onRefresh: _onRefresh,
