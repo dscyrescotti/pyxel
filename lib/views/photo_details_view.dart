@@ -53,25 +53,31 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
           } else {
             final photo = viewModel.photo;
             final Color color = HexColor(photo.color);
-            return CustomScrollView(  
-              physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              slivers: [
-                SliverHeader(color: color, photo: photo),
-                SliverList(
-                  delegate: SliverChildListDelegate([
-                    ProfileRow(color: color, photo: photo),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text('Created on ${DateFormat('d MMM, yyyy').format(photo.createdAt)}'),
-                    ),
-                    photo.description != null ? DescriptionRow(photo: photo) : Container(),
-                    StatisticRow(photo: photo, color: color),
-                    ExifRow(photo: photo),
-                    photo.location != null ? LocationRow(photo: photo) : Container(),
-                    TagsRow(tags: photo.tags, margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5), padding: EdgeInsets.only(bottom: 10),),
-                  ]),
-                ),
-              ],
+            return NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (overscroll) {
+                if (overscroll.leading) overscroll.disallowGlow();
+                return true;
+              },
+              child: CustomScrollView(  
+                physics: AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverHeader(color: color, photo: photo),
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      ProfileRow(color: color, photo: photo),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text('Created on ${DateFormat('d MMM, yyyy').format(photo.createdAt)}'),
+                      ),
+                      photo.description != null ? DescriptionRow(photo: photo) : Container(),
+                      StatisticRow(photo: photo, color: color),
+                      ExifRow(photo: photo),
+                      photo.location != null ? LocationRow(photo: photo) : Container(),
+                      TagsRow(tags: photo.tags, margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5), padding: EdgeInsets.only(bottom: 10),),
+                    ]),
+                  ),
+                ],
+              ),
             );
           }
         },

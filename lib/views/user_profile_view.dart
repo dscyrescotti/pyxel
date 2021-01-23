@@ -73,7 +73,7 @@ class __UserProfileViewState extends State<_UserProfileView> {
         length: 3,
         child: NestedScrollView(
           controller: controller,
-          physics: BouncingScrollPhysics(),
+          physics: AlwaysScrollableScrollPhysics(),
           headerSliverBuilder: (context, _) {
             final user = viewModel.user;
             return [

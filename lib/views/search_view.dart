@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pyxel/components/pop_button.dart';
+import 'package:pyxel/view_models/search_view_model.dart';
+import '../components/circular_progress.dart';
+import '../components/image_card.dart';
+import 'package:waterfall_flow/waterfall_flow.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _SearchView();
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SearchPhotosViewModel()),
+      ],
+      builder: (context, child) => _SearchView(),
+    );
   }
 }
 
@@ -18,53 +28,153 @@ class _SearchView extends StatefulWidget {
 }
 
 class __SearchViewState extends State<_SearchView> {
+  TextEditingController _editingController;
+
+  @override
+  void initState() {
+    super.initState();
+    _editingController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _editingController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(  
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            elevation: 0,
-            snap: true,
-            backgroundColor: Colors.white,
-            leading: PopButton(color: Colors.white,),
-            // bottom: PreferredSize(  
-            //   child: ,
-            // ),
-            title: TextField(
-                autofocus: true,
-                textAlign: TextAlign.start,
-                decoration: InputDecoration.collapsed(
-                  hintText: 'Search',
-                ),
-                onChanged: (value) {
-
-                },
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          leading: PopButton(color: Colors.white,),
+          title: TextField(
+              autofocus: true,
+              textAlign: TextAlign.start,
+              controller: _editingController,
+              decoration: InputDecoration.collapsed(
+                hintText: 'Search',
               ),
-            actions: [
-              IconButton(
-                padding: EdgeInsets.zero,
-                icon: Icon(   
-                  Icons.close,
-                  size: 25,
-                ),
-                onPressed: () {},
-              )
-            ],
-            textTheme: Theme.of(context).textTheme,
-            bottom: PreferredSize(  
-              child: Container(
-                color: Colors.black.withOpacity(0.5),
-                height: 0.4,
-              ),
-              preferredSize: Size.fromHeight(0.4),
+              onSubmitted: (value) {
+                print(value);
+              },
             ),
-            iconTheme: Theme.of(context).iconTheme,
-            
+          actions: [
+              IconButton(
+              padding: EdgeInsets.zero,
+              icon: Icon(   
+                Icons.close,
+                size: 25,
+              ),
+              onPressed: () {
+                _editingController.text = '';
+              },
+            )
+          ],
+          textTheme: Theme.of(context).textTheme,
+          bottom: TabBar(
+            labelColor: Colors.black,
+            labelStyle: Theme.of(context).textTheme.button,
+            tabs: [
+              Tab(  
+                text: 'Photos',
+              ),
+              Tab(  
+                text: 'Collections',
+              ),
+              Tab(  
+                text: 'Users',
+              ),
+            ],
           ),
+          iconTheme: Theme.of(context).iconTheme,
+        ),
+        body: TabBarView(  
+          children: [
+            SearchPhotosView(),
+            Text('Collections'),
+            Text('Users')
+          ],
+        )
+      ),
+    );
+  }
+}
+
+class SearchPhotosView extends StatefulWidget {
+  SearchPhotosView({Key key}) : super(key: key);
+
+  @override
+  _SearchPhotosViewState createState() => _SearchPhotosViewState();
+}
+
+class _SearchPhotosViewState extends State<SearchPhotosView> {
+  ScrollController _controller;
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos('tree');
+    _controller = ScrollController();
+    _controller.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = Provider.of<SearchPhotosViewModel>(context);
+    print(viewModel.photos.length);
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: CustomScrollView(  
+        controller: _controller,
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.all(10),
+            sliver: SliverWaterfallFlow(
+              gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return ImageCard(photo: viewModel.photos[index]);
+                },
+                childCount: viewModel.photos.length
+              ),
+            ),
+          ),
+          viewModel.photos.isNotEmpty ? SliverList(
+            delegate: SliverChildListDelegate([
+              Padding(
+                padding: EdgeInsets.only(top: 5, bottom: 10),
+                child: CircularProgress(),
+              )
+            ]),
+          ) : SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Text('Type something to search'),
+            )
+          )
         ],
       ),
     );
+  }
+  _scrollListener() {
+    if (_controller.offset == _controller.position.maxScrollExtent && !_controller.position.outOfRange) {
+      print("[Debug]: reach the bottom");
+      Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos('hello');
+    }
+  }
+  Future<void> _onRefresh() async {
+    await Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos('hello', isRefresh: true);
   }
 }
