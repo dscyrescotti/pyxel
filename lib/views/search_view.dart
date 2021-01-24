@@ -52,14 +52,14 @@ class __SearchViewState extends State<_SearchView> {
           backgroundColor: Colors.white,
           leading: PopButton(color: Colors.white,),
           title: TextField(
-              autofocus: true,
+              autofocus: _editingController.text.isEmpty,
               textAlign: TextAlign.start,
               controller: _editingController,
               decoration: InputDecoration.collapsed(
                 hintText: 'Search',
               ),
               onSubmitted: (value) {
-                print(value);
+                search(value);
               },
             ),
           actions: [
@@ -102,6 +102,10 @@ class __SearchViewState extends State<_SearchView> {
       ),
     );
   }
+
+  void search(String query) {
+    Provider.of<SearchPhotosViewModel>(context, listen: false).initLoad(query);
+  }
 }
 
 class SearchPhotosView extends StatefulWidget {
@@ -116,7 +120,6 @@ class _SearchPhotosViewState extends State<SearchPhotosView> {
   @override
   void initState() {
     super.initState();
-    Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos('tree');
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
   }
@@ -158,6 +161,9 @@ class _SearchPhotosViewState extends State<SearchPhotosView> {
                 child: CircularProgress(),
               )
             ]),
+          ) : viewModel.isInit ? SliverFillRemaining(
+            hasScrollBody: false,
+            child: CircularProgress()
           ) : SliverFillRemaining(
             hasScrollBody: false,
             child: Center(
@@ -171,10 +177,10 @@ class _SearchPhotosViewState extends State<SearchPhotosView> {
   _scrollListener() {
     if (_controller.offset == _controller.position.maxScrollExtent && !_controller.position.outOfRange) {
       print("[Debug]: reach the bottom");
-      Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos('hello');
+      Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos();
     }
   }
   Future<void> _onRefresh() async {
-    await Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos('hello', isRefresh: true);
+    await Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos(isRefresh: true);
   }
 }
