@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pyxel/components/collection_card.dart';
 import 'package:pyxel/components/pop_button.dart';
 import 'package:pyxel/view_models/search_view_model.dart';
 import '../components/circular_progress.dart';
@@ -14,6 +15,7 @@ class SearchView extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => SearchPhotosViewModel()),
+        ChangeNotifierProvider(create: (context) => SearchCollectionsViewModel()),
       ],
       builder: (context, child) => _SearchView(),
     );
@@ -45,7 +47,7 @@ class __SearchViewState extends State<_SearchView> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -85,9 +87,9 @@ class __SearchViewState extends State<_SearchView> {
               Tab(  
                 text: 'Collections',
               ),
-              Tab(  
-                text: 'Users',
-              ),
+              // Tab(  
+              //   text: 'Users',
+              // ),
             ],
           ),
           iconTheme: Theme.of(context).iconTheme,
@@ -95,8 +97,8 @@ class __SearchViewState extends State<_SearchView> {
         body: TabBarView(  
           children: [
             SearchPhotosView(),
-            Text('Collections'),
-            Text('Users')
+            SearchCollectionsView(),
+            // Text('Users')
           ],
         )
       ),
@@ -105,6 +107,7 @@ class __SearchViewState extends State<_SearchView> {
 
   void search(String query) {
     Provider.of<SearchPhotosViewModel>(context, listen: false).initLoad(query);
+    Provider.of<SearchCollectionsViewModel>(context, listen: false).initLoad(query);
   }
 }
 
@@ -132,7 +135,6 @@ class _SearchPhotosViewState extends State<SearchPhotosView> {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<SearchPhotosViewModel>(context);
-    print(viewModel.photos.length);
     return RefreshIndicator(
       onRefresh: _onRefresh,
       child: CustomScrollView(  
@@ -182,5 +184,81 @@ class _SearchPhotosViewState extends State<SearchPhotosView> {
   }
   Future<void> _onRefresh() async {
     await Provider.of<SearchPhotosViewModel>(context, listen: false).searchPhotos(isRefresh: true);
+  }
+}
+
+class SearchCollectionsView extends StatefulWidget {
+  SearchCollectionsView({Key key}) : super(key: key);
+
+  @override
+  _SearchCollectionsViewState createState() => _SearchCollectionsViewState();
+}
+
+class _SearchCollectionsViewState extends State<SearchCollectionsView> {
+  ScrollController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = ScrollController();
+    _controller.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = Provider.of<SearchCollectionsViewModel>(context);
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: CustomScrollView(  
+        controller: _controller,
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.all(10),
+            sliver: SliverWaterfallFlow(
+              gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return CollectionCard(collection: viewModel.collections[index]);
+                },
+                childCount: viewModel.collections.length
+              ),
+            ),
+          ),
+          viewModel.collections.isNotEmpty ? SliverList(
+            delegate: SliverChildListDelegate([
+              Padding(
+                padding: EdgeInsets.only(top: 5, bottom: 10),
+                child: CircularProgress(),
+              )
+            ]),
+          ) : viewModel.isInit ? SliverFillRemaining(
+            hasScrollBody: false,
+            child: CircularProgress()
+          ) : SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Text('Type something to search'),
+            )
+          )
+        ],
+      ),
+    );
+  }
+  _scrollListener() {
+    if (_controller.offset == _controller.position.maxScrollExtent && !_controller.position.outOfRange) {
+      print("[Debug]: reach the bottom");
+      Provider.of<SearchCollectionsViewModel>(context, listen: false).searchCollections();
+    }
+  }
+  Future<void> _onRefresh() async {
+    await Provider.of<SearchCollectionsViewModel>(context, listen: false).searchCollections(isRefresh: true);
   }
 }

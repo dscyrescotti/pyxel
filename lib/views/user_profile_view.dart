@@ -102,7 +102,7 @@ class __UserProfileViewState extends State<_UserProfileView> {
                   ),
                   Expanded(  
                     child: TabBarView(
-                      physics: BouncingScrollPhysics(),
+                      physics: AlwaysScrollableScrollPhysics(),
                       children: [
                         user.totalPhotos != 0 ? UserPhotoGridView(controller: controller,) : Center(child: Text('No photos'),),
                         user.totalLikes != 0 ? UserLikeGridView(controller: controller,) : Center(child: Text('No likes'),),
@@ -174,7 +174,7 @@ class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKee
     super.build(context);
     final viewModel = Provider.of<UserProfileViewModel>(context);
     return viewModel.photos.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
-      physics: BouncingScrollPhysics(),
+      physics: AlwaysScrollableScrollPhysics(),
       controller: _controller,
       padding: EdgeInsets.all(10),
       gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
@@ -244,7 +244,7 @@ class _UserLikeGridViewState extends State<UserLikeGridView> with AutomaticKeepA
     super.build(context);
     final viewModel = Provider.of<UserProfileViewModel>(context);
     return viewModel.likes.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
-      physics: BouncingScrollPhysics(),
+      physics: AlwaysScrollableScrollPhysics(),
       controller: _controller,
       padding: EdgeInsets.all(10),
       gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(

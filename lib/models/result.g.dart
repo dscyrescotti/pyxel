@@ -23,3 +23,21 @@ Map<String, dynamic> _$PhotoResultToJson(PhotoResult instance) =>
       'total_pages': instance.totalPages,
       'results': instance.results,
     };
+
+CollectionResult _$CollectionResultFromJson(Map<String, dynamic> json) {
+  return CollectionResult(
+    total: json['total'] as int,
+    results: (json['results'] as List)
+        ?.map((e) =>
+            e == null ? null : Collection.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    totalPages: json['total_pages'] as int,
+  );
+}
+
+Map<String, dynamic> _$CollectionResultToJson(CollectionResult instance) =>
+    <String, dynamic>{
+      'total': instance.total,
+      'total_pages': instance.totalPages,
+      'results': instance.results,
+    };

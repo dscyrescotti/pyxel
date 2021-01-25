@@ -13,6 +13,7 @@ class CollectionDetailsViewModel extends ChangeNotifier {
   Collection collection;
   List<Photo> photos = [];
 
+  bool isEmpty = false;
   int photoPage = 1;
   bool photoEnd = false;
 
@@ -64,6 +65,9 @@ class CollectionDetailsViewModel extends ChangeNotifier {
           photoPage++;
         },
       );
+      if (photos.isEmpty) {
+        isEmpty = true;
+      }
       notifyListeners();
     } catch (error) {
       print(error);

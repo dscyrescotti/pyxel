@@ -49,114 +49,117 @@ class __CollectionDetailsViewState extends State<_CollectionDetailsView> {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<CollectionDetailsViewModel>(context);
     return Scaffold(
-      body: viewModel.collection == null ? CircularProgress() : SafeArea(
-        child: CustomScrollView(  
-          controller: _controller,
-          physics: BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              floating: true,
-              elevation: 0,
-              snap: true,
-              backgroundColor: Colors.white,
-              title: Text('Collection'),
-              centerTitle: true,
-              textTheme: Theme.of(context).textTheme,
-              bottom: PreferredSize(  
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                  height: 0.4,
-                ),
-                preferredSize: Size.fromHeight(0.4),
-              ),
-              leading: PopButton(color: Colors.white,),
-            ),
-            CupertinoSliverRefreshControl(
-              onRefresh: _onRefresh,
-            ),
-            SliverList( 
-              delegate: SliverChildListDelegate([
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        viewModel.collection.title,
-                        style: TextStyle( 
-                          fontSize: Theme.of(context).textTheme.headline5.fontSize,
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      Text('Published on ${DateFormat('d MMM, yyyy').format(viewModel.collection.publishedAt)}'),
-                      Container(
-                        margin: EdgeInsets.only(top: 10),
-                        child: Column(  
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Total Photos',
-                              style: TextStyle(  
-                                fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-                                fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            Text(
-                              viewModel.collection.totalPhotos.toString(),
-                              style: TextStyle(  
-                                fontSize: Theme.of(context).textTheme.headline6.fontSize,
-                                fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      viewModel.collection.description == null ? Container() : DescriptionRow(collection: viewModel.collection),
-                      viewModel.collection.user == null ? Container() : CreatorRow(user: viewModel.collection.user),
-                      viewModel.collection.tags.isEmpty ? Container() : Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: TagsRow(tags: viewModel.collection.tags),
-                      )
-                    ],
-                  ),
-                )
-              ]),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.all(10),
-              sliver: SliverWaterfallFlow(
-                gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return ImageCard(photo: viewModel.photos[index]);
-                  },
-                  childCount: viewModel.photos.length
-                ),
-              ),
-            ),
-            viewModel.photos.isNotEmpty ? SliverList(
-              delegate: SliverChildListDelegate([
-                viewModel.photoEnd ? Padding(
-                  padding: EdgeInsets.only(top: 5, bottom: 10),  
-                  child: CircleAvatar(
-                    radius: 6,
-                    backgroundColor: Colors.grey,
-                  ),
-                ) : Padding(
-                  padding: EdgeInsets.only(top: 5, bottom: 10),
-                  child: CircularProgress(),
-                )
-              ]),
-            ) : SliverFillRemaining(
-              hasScrollBody: false,
-              child: CircularProgress()
-            )
-          ],
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: Text('Collection'),
+        centerTitle: true,
+        textTheme: Theme.of(context).textTheme,
+        bottom: PreferredSize(  
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+            height: 0.4,
+          ),
+          preferredSize: Size.fromHeight(0.4),
         ),
+        leading: PopButton(color: Colors.white,),
+      ),
+      body: viewModel.collection == null ? CircularProgress() : SafeArea(
+        child: RefreshIndicator(  
+          onRefresh: _onRefresh,
+          child: CustomScrollView(  
+            controller: _controller,
+            physics: AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverList( 
+                delegate: SliverChildListDelegate([
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          viewModel.collection.title,
+                          style: TextStyle( 
+                            fontSize: Theme.of(context).textTheme.headline5.fontSize,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        Text('Published on ${DateFormat('d MMM, yyyy').format(viewModel.collection.publishedAt)}'),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Column(  
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total Photos',
+                                style: TextStyle(  
+                                  fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              Text(
+                                viewModel.collection.totalPhotos.toString(),
+                                style: TextStyle(  
+                                  fontSize: Theme.of(context).textTheme.headline6.fontSize,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        viewModel.collection.description == null ? Container() : DescriptionRow(collection: viewModel.collection),
+                        viewModel.collection.user == null ? Container() : CreatorRow(user: viewModel.collection.user),
+                        viewModel.collection.tags.isEmpty ? Container() : Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: TagsRow(tags: viewModel.collection.tags),
+                        )
+                      ],
+                    ),
+                  )
+                ]),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.all(10),
+                sliver: SliverWaterfallFlow(
+                  gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return ImageCard(photo: viewModel.photos[index]);
+                    },
+                    childCount: viewModel.photos.length
+                  ),
+                ),
+              ),
+              viewModel.photos.isEmpty ? (viewModel.isEmpty ? SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(  
+                  child: Text('There\'s no photos in this collection.'),
+                )
+              ) : SliverFillRemaining(
+                hasScrollBody: false,
+                child: CircularProgress()
+              ) ): SliverList(
+                delegate: SliverChildListDelegate([
+                  viewModel.photoEnd ? Padding(
+                    padding: EdgeInsets.only(top: 5, bottom: 10),  
+                    child: CircleAvatar(
+                      radius: 6,
+                      backgroundColor: Colors.grey,
+                    ),
+                  ) : Padding(
+                    padding: EdgeInsets.only(top: 5, bottom: 10),
+                    child: CircularProgress(),
+                  )
+                ]),
+              ) 
+            ],
+          ),
+        )
       )
     );
   }
