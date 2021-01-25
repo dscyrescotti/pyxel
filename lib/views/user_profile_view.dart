@@ -40,6 +40,7 @@ class __UserProfileViewState extends State<_UserProfileView> {
     Provider.of<UserProfileViewModel>(context, listen: false).fetchUser();
     Provider.of<UserProfileViewModel>(context, listen: false).fetchPhotos();
     Provider.of<UserProfileViewModel>(context, listen: false).fetchLikes();
+
   }
 
   @override
@@ -51,6 +52,7 @@ class __UserProfileViewState extends State<_UserProfileView> {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<UserProfileViewModel>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -73,7 +75,7 @@ class __UserProfileViewState extends State<_UserProfileView> {
         length: 3,
         child: NestedScrollView(
           controller: controller,
-          physics: BouncingScrollPhysics(),
+          physics: AlwaysScrollableScrollPhysics(),
           headerSliverBuilder: (context, _) {
             final user = viewModel.user;
             return [
@@ -83,26 +85,25 @@ class __UserProfileViewState extends State<_UserProfileView> {
           body: Builder(
             builder: (context) {
               final user = viewModel.user;
-              return Column(  
+              return Column( 
                 children: [
                   TabBar(
                     labelColor: Colors.black,
-                    labelStyle: Theme.of(context).textTheme.button,
                     tabs: [
-                      Tab(  
+                      Tab(
                         text: 'Photos',
                       ),
-                      Tab(  
-                        text: 'Likes',
+                      Tab(
+                        text: 'Photos',
                       ),
-                      Tab(  
-                        text: 'Collections',
-                      ),
+                      Tab(
+                        text: 'Photos',
+                      )
                     ],
                   ),
-                  Expanded(  
+                  Expanded( 
                     child: TabBarView(
-                      physics: BouncingScrollPhysics(),
+                      physics: AlwaysScrollableScrollPhysics(),
                       children: [
                         user.totalPhotos != 0 ? UserPhotoGridView(controller: controller,) : Center(child: Text('No photos'),),
                         user.totalLikes != 0 ? UserLikeGridView(controller: controller,) : Center(child: Text('No likes'),),
@@ -110,7 +111,7 @@ class __UserProfileViewState extends State<_UserProfileView> {
                       ],
                     ),
                   )
-                ],
+                ]
               );
             },
           ),
@@ -174,7 +175,7 @@ class _UserPhotoGridViewState extends State<UserPhotoGridView> with AutomaticKee
     super.build(context);
     final viewModel = Provider.of<UserProfileViewModel>(context);
     return viewModel.photos.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
-      physics: BouncingScrollPhysics(),
+      physics: AlwaysScrollableScrollPhysics(),
       controller: _controller,
       padding: EdgeInsets.all(10),
       gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
@@ -244,8 +245,8 @@ class _UserLikeGridViewState extends State<UserLikeGridView> with AutomaticKeepA
     super.build(context);
     final viewModel = Provider.of<UserProfileViewModel>(context);
     return viewModel.likes.length == 0 ? Center(child: CircularProgress()) : WaterfallFlow.builder(
-      physics: BouncingScrollPhysics(),
       controller: _controller,
+      physics: AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.all(10),
       gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -296,7 +297,8 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverList(
+    return 
+    SliverList(
       delegate: SliverChildListDelegate([
         Container(
           padding: EdgeInsets.all(5),

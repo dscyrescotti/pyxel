@@ -32,31 +32,11 @@ class _CollectionsViewState extends State<CollectionsView> {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<CollectionsViewModel>(context);
     print("[Build]: build widget.");
-    return SafeArea(
+    return RefreshIndicator(
+        onRefresh: _onRefresh,
         child: CustomScrollView(  
           controller: _controller,
-          physics: BouncingScrollPhysics(),
           slivers: [
-            SliverAppBar(
-              floating: true,
-              elevation: 0,
-              snap: true,
-              backgroundColor: Colors.white,
-              title: Text('pyxel'),
-              centerTitle: true,
-              textTheme: Theme.of(context).textTheme,
-              bottom: PreferredSize(  
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                  height: 0.4,
-                ),
-                preferredSize: Size.fromHeight(0.4),
-              ),
-            ),
-            CupertinoSliverRefreshControl(
-              onRefresh: _onRefresh,
-              // builder: (context, refreshState, pulledExtent, refreshTriggerPullDistance, refreshIndicatorExtent) => Icon(Icons.arrow_downward),
-            ),
             SliverPadding(
               padding: EdgeInsets.all(10),
               sliver: SliverWaterfallFlow(

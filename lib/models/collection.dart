@@ -22,8 +22,9 @@ class Collection {
   @JsonKey(name: 'cover_photo')
   final Photo coverPhoto;
   final User user;
+  final List<Tag> tags;
 
-  Collection({this.id, this.title, this.description, this.publishedAt, this.updatedAt, this.shareKey, this.private, this.totalPhotos, this.coverPhoto, this.user});
+  Collection({this.id, this.title, this.description, this.publishedAt, this.updatedAt, this.shareKey, this.private, this.totalPhotos, this.coverPhoto, this.user, this.tags});
   factory Collection.fromJson(Map<String, dynamic> json) => _$CollectionFromJson(json);
   Map<String, dynamic> toJson() => _$CollectionToJson(this);
   static List<Collection> fromJsonArray(Iterable<dynamic> list) => list.map((p) => Collection.fromJson(p)).toList();

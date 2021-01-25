@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
-import 'package:flutter_tags/flutter_tags.dart';
+import '../components/tags_row.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:pyxel/components/circular_progress.dart';
-import 'package:pyxel/components/route_transition.dart';
 import 'package:pyxel/models/photo.dart';
 import 'package:pyxel/view_models/photo_details_view_model.dart';
 import 'package:pyxel/components/sliver_header.dart';
-import 'package:pyxel/views/user_profile_view.dart';
 import '../utils/numeral.dart';
 import 'package:latlong/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../components/statistic_box.dart';
+import '../components/profile_info.dart';
+import 'package:intl/intl.dart';
 
 class PhotoDetailsView extends StatelessWidget {
   const PhotoDetailsView({Key key, this.id}) : super(key: key);
@@ -53,21 +53,31 @@ class __PhotoDetailsViewState extends State<_PhotoDetailsView> {
           } else {
             final photo = viewModel.photo;
             final Color color = HexColor(photo.color);
-            return CustomScrollView(  
-              physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              slivers: [
-                SliverHeader(color: color, photo: photo),
-                SliverList(
-                  delegate: SliverChildListDelegate([
-                    ProfileRow(color: color, photo: photo),
-                    photo.description != null ? DescriptionRow(photo: photo) : Container(),
-                    StatisticRow(photo: photo, color: color),
-                    ExifRow(photo: photo),
-                    photo.location != null ? LocationRow(photo: photo) : Container(),
-                    TagsRow(tags: photo.tags,),
-                  ]),
-                ),
-              ],
+            return NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (overscroll) {
+                if (overscroll.leading) overscroll.disallowGlow();
+                return true;
+              },
+              child: CustomScrollView(  
+                physics: AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverHeader(color: color, photo: photo),
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      ProfileRow(color: color, photo: photo),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text('Created on ${DateFormat('d MMM, yyyy').format(photo.createdAt)}'),
+                      ),
+                      photo.description != null ? DescriptionRow(photo: photo) : Container(),
+                      StatisticRow(photo: photo, color: color),
+                      ExifRow(photo: photo),
+                      photo.location != null ? LocationRow(photo: photo) : Container(),
+                      TagsRow(tags: photo.tags, margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5), padding: EdgeInsets.only(bottom: 10),),
+                    ]),
+                  ),
+                ],
+              ),
             );
           }
         },
@@ -258,54 +268,6 @@ class StatisticRow extends StatelessWidget {
   }
 }
 
-class TagsRow extends StatelessWidget {
-  const TagsRow({
-    Key key,
-    this.tags,
-  }) : super(key: key);
-  final List<Tag> tags;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      padding: tags.length == 0 ? EdgeInsets.zero : EdgeInsets.only(bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,  
-        children: [
-          Text(
-            'Tags',
-            style: TextStyle(  
-              fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-              fontWeight: FontWeight.bold
-            ),
-          ),
-          SizedBox(height: 10,),
-          Tags(  
-            spacing: 8,
-            runSpacing: 8,
-            alignment: WrapAlignment.start,
-            itemCount: tags.length,
-            itemBuilder: (index) => ItemTags(
-              textStyle: TextStyle(  
-                fontSize: Theme.of(context).textTheme.caption.fontSize,
-                fontWeight: FontWeight.normal
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              index: index, 
-              title: tags[index].title,
-              border: Border.all(width: 0.5, color: Colors.grey.withOpacity(0.3)),
-              elevation: 0,
-              textActiveColor: Colors.black,
-              activeColor: Colors.grey.withOpacity(0.2),
-            ),
-          ),
-        ],
-      )
-    );
-  }
-}
-
 class DescriptionRow extends StatelessWidget {
   const DescriptionRow({
     Key key,
@@ -353,67 +315,7 @@ class ProfileRow extends StatelessWidget {
     return Container(  
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(10),
-      child: Row( 
-        children: [
-          Container(
-            height: 60,
-            width: 60,
-            decoration: BoxDecoration( 
-              shape: BoxShape.circle,
-              color: color,
-            ),
-            child: ClipOval(
-              child: InkWell(
-                customBorder: RoundedRectangleBorder(  
-                  borderRadius: BorderRadius.circular(30)
-                ),
-                onTap: () {
-                  Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
-                },
-                child: Image.network(
-                  photo.user.profileImage.large
-                ),
-              ),
-            ),
-            margin: EdgeInsets.only(right: 10),
-          ),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
-                  },
-                  child: Text(
-                    photo.user.name,
-                    style: TextStyle(  
-                      fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
-                      fontWeight: FontWeight.bold
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-                InkWell( 
-                  onTap: () {
-                    Navigator.of(context).push(SlideRoute(page: UserProfileView(username: photo.user.username,)));
-                  }, 
-                  child: Text(
-                    '@${photo.user.username}',
-                    style: TextStyle(  
-                      fontSize: Theme.of(context).textTheme.subtitle2.fontSize,
-                      fontWeight: FontWeight.normal
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ), 
+      child: ProfileInfo(color: color, user: photo.user),
     );
   }
 }
